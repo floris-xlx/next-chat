@@ -41,7 +41,8 @@ export async function addMessage({ message }: { message: MessageEntry }) {
     return { success: true };
 }
 
-export async function fetchMessagesByDomainAndThread(domain: string, thread_id: string) {
+
+export async function fetchMessagesByDomainAndThread(domain: string, thread_id: string): Promise<{ success: boolean; error?: any; data: any[] | null }> {
     const xylexClient = createXylexClient();
 
     const { data, error } = await xylexClient
@@ -55,5 +56,5 @@ export async function fetchMessagesByDomainAndThread(domain: string, thread_id: 
         return { success: false, error, data: null };
     }
 
-    return { success: true, data };
+    return { success: true, data: data as any[] };
 }

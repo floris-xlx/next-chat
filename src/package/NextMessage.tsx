@@ -303,25 +303,7 @@ const MessageBox = ({
         messages?: string[];
     }> = ({ messages = [] }) => {
 
-        const [hasMounted, setHasMounted] = React.useState<boolean>(() => {
-            const storedValue = localStorage.getItem('hasMounted');
-            return storedValue === 'true';
-        });
 
-
-        // UseEffect for initial mount scroll
-        React.useEffect(() => {
-            if (!hasMounted) {
-                if (containerRef.current) {
-                    containerRef.current.scrollTo({
-                        top: containerRef.current.scrollHeight,
-                        behavior: 'auto',
-                    });
-                }
-                localStorage.setItem('hasMounted', 'true');
-                setHasMounted(true);
-            }
-        }, [hasMounted]);
 
         // Capture user scroll manually and avoid unintended scrolling
         const handleUserScroll = () => {

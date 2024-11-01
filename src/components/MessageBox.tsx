@@ -100,7 +100,7 @@ const MessageBox = ({
 
 
     // this would be the form submission
-    const handleSendClick = async (e: any) => {
+    const handleSendClick = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!textContent.trim()) {
             return;
@@ -113,9 +113,9 @@ const MessageBox = ({
             referenced_message_id: referencedMessageId || null,
             is_reference: !!referencedMessageId,
             character_count: countCharacters(textContent),
-            mentions: [], // awaiting implementation
-            attachments: [], // awaiting implementation
-            reactions: [], // awaiting implementation
+            mentions: [] as string[], // awaiting implementation
+            attachments: [] as string[], // awaiting implementation
+            reactions: [] as string[], // awaiting implementation
             thread_id: thread_id,
             domain: domain,
             profile_picture: user?.profile_picture,
@@ -129,7 +129,7 @@ const MessageBox = ({
             if (response.success) {
 
                 setTextContent('');
-                setMessages((prevMessages) => [...prevMessages, newMessageObject]);
+                setMessages((prevMessages) => [...prevMessages, JSON.stringify(newMessageObject)]);
 
 
                 // await fetchMessages();
