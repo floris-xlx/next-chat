@@ -7,8 +7,8 @@ import {
     AtSign,
 } from "lucide-react";
 
-import React, { Fragment, useState, useEffect } from 'react';
-
+import React, { Fragment, useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 // actions
 import { addMessage, fetchMessagesByDomainAndThread } from '@/actions/messaging';
 
@@ -187,6 +187,8 @@ const MessageBox = ({
 
     const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
 
+    console.log('isTextAreaFocused', isTextAreaFocused);
+
 
 
     // regulates whether the message can be sent if there is no content
@@ -211,8 +213,6 @@ const MessageBox = ({
     }: {
         message: any
     }) => {
-
-
         // this is the character bound limit to force wrap text
         const [characterWrapLimit, setCharacterWrapLimit] = useState(30);
         const [screenWidth, setScreenWidth] = useState(300);
@@ -223,7 +223,7 @@ const MessageBox = ({
         useEffect(() => {
             const handleResize = () => {
                 setScreenWidth(window?.innerWidth);
-                setCharacterWrapLimit(Math.round(screenWidth / 8));
+                setCharacterWrapLimit(Math.round(screenWidth / 11));
                 setContent(wrapText(message?.content, characterWrapLimit));
             };
 
@@ -245,20 +245,18 @@ const MessageBox = ({
         const renderAvatar = () => {
             if (message?.profile_picture) {
                 return (
-                    <Avatar className='rounded-md'>
-                        <AvatarImage
-                            src={message.profile_picture}
-                            height={28}
-                            width={28}
-                            style={{
-                                borderRadius: '6px',
-                                height: '28px',
-                                width: '28px'
-                            }}
-
-                        />
-
-                    </Avatar>
+                    <Image
+                        src={message.profile_picture}
+                        height={28}
+                        width={28}
+                        alt="Profile Picture"
+                        className='rounded-md'
+                        style={{
+                            borderRadius: '6px',
+                            height: '28px',
+                            width: '28px'
+                        }}
+                    />
                 )
             } else {
                 return (
@@ -272,7 +270,7 @@ const MessageBox = ({
         }
 
         return (
-            <div className='flex flex-row gap-x-2 max-w-full overflow-x-scroll' style={{ maxWidth: screenWidth }}>
+            <div className='flex flex-row gap-x-2 max-w-full ' style={{ maxWidth: screenWidth }}>
                 {renderAvatar()}
 
                 <div className='pt-[3px]'>
@@ -284,8 +282,10 @@ const MessageBox = ({
                             {time}
                         </p>
                     </div>
-                    <p className='text-[14px] font-[400] text-accent opacity-70  text-wrap ' style={{ maxWidth: (screenWidth * 0.9) }}>
+                    <p className='text-[14px] font-[400] text-accent opacity-70  text-wrap ' >
                         <span
+                            style={{ width: (screenWidth * 0.75) }}
+                            className='overflow-x-hidden overflow-ellipsis whitespace-nowrap'
                             dangerouslySetInnerHTML={{
                                 __html: content?.replace(/\n/g, "<br />"),
                             }}
@@ -296,27 +296,55 @@ const MessageBox = ({
         )
     }
 
-    const containerRef = React.useRef<HTMLDivElement>(null);
-    const [isUserScrolling, setIsUserScrolling] = React.useState(false);
+    const chatContainerRef = React.useRef<HTMLDivElement>(null);
+    const textAreaRef = useRef(null);
+
+    // Track and restore scroll position on focus
+    const handleTextAreaFocus = () => {
+
+        if (chatContainerRef.current) {
+            const scrollPosition = chatContainerRef.current.scrollTop;
+
+            setTimeout(() => {
+                chatContainerRef.current.scrollTop = scrollPosition;
+            }, 0);
+        }
+
+        setIsTextAreaFocused(true);
+    };
+
+
+    // Track and restore scroll position on focus or blur
+    const restoreScrollPosition = () => {
+        if (chatContainerRef.current) {
+            const scrollPosition = chatContainerRef.current.scrollTop;
+
+            setTimeout(() => {
+                chatContainerRef.current.scrollTop = scrollPosition;
+            }, 0);
+        }
+    };
+
 
     const MessageContainer: React.FC<{
         messages?: string[];
     }> = ({ messages = [] }) => {
+        // Scroll to the bottom only when new messages are added
+        useEffect(() => {
+            if (chatContainerRef.current) {
+                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            }
+        }, [messages]);
 
 
 
-        // Capture user scroll manually and avoid unintended scrolling
-        const handleUserScroll = () => {
-            setIsUserScrolling(true);
-            // Reset isUserScrolling after a timeout to handle any further actions
-            setTimeout(() => setIsUserScrolling(false), 1000);
-        };
 
         return (
             <div
-                ref={containerRef}
-                className="w-full sm:max-w-[650px] h-[400px] border border-b-0 rounded-t-md bg-secondary flex flex-col gap-y-4 p-3 overflow-y-auto"
-                onScroll={handleUserScroll} // Track when user is scrolling manually
+                ref={chatContainerRef}
+                className="w-full sm:w-[650px]  border border-b-0 rounded-t-md bg-secondary flex flex-col gap-y-4 p-3"
+                style={{ height: '400px', overflowY: 'scroll' }}
+
             >
                 {messages.map((message, index) => (
                     <div key={index} style={{ overflowWrap: 'break-word' }}>
@@ -349,19 +377,15 @@ const MessageBox = ({
                             height: textAreaHeight + 'px',
                             minHeight: textAreaHeight + 'px',
                         }}
-                        onFocus={() => {
-                            setIsTextAreaFocused(true);
-                            // Prevent MessageContainer from auto-scrolling when focusing on Textarea
-                            if (containerRef.current && isUserScrolling) {
-                                containerRef.current.scrollTop = containerRef.current.scrollHeight;
-                                console.log('scrollTop', containerRef.current.scrollTop);
-                            }
+                        onFocus={handleTextAreaFocus}
+                        onBlur={() => {
+                            restoreScrollPosition();
+                            setIsTextAreaFocused(false);
                         }}
-                        onBlur={() => setIsTextAreaFocused(false)}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 handleSendClick(e);
-                                e.preventDefault(); // Prevents creating a new line when sending the message
+                                e.preventDefault();
                             }
                         }}
                     />
