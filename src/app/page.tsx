@@ -50,7 +50,7 @@ export default function Home() {
   const domain = 'demo'
 
   return (
-    <div className='p-4'>
+    <div className='p-4 flex flex-row justify-center w-full translate-y-[50%]'>
       <MessageBox
         thread_id={thread_id}
         domain={domain}
