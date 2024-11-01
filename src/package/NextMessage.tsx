@@ -14,7 +14,6 @@ import { addMessage, fetchMessagesByDomainAndThread } from '@/actions/messaging'
 
 // utils
 import { calculateRelativeTimestamp } from '@/utils/date-utils';
-import { wrapText } from '@/package/utils/format-utils';
 
 // zustand
 import { useNextMessageStore } from "./store/useNextMessageStore";
@@ -45,6 +44,7 @@ export type MessageBoxProps = {
     style?: MessageBoxStylingProps;
     allowSelectName?: boolean;
     allowSelectMessage?: boolean;
+    placeholderMessage?: string;
 };
 
 export type MessageBoxStylingProps = {
@@ -58,7 +58,8 @@ const MessageBox = ({
     domain,
     style = { width: '600px', height: '400px' },
     allowSelectName = false,
-    allowSelectMessage = false
+    allowSelectMessage = false,
+    placeholderMessage = 'Write a message...',
 }: MessageBoxProps) => {
     // zustand
     const { toast } = useToast();
@@ -107,9 +108,7 @@ const MessageBox = ({
     }
 
     useEffect(() => {
-        if (!thread_id || !domain) {
-            return;
-        }
+        if (!thread_id || !domain) { return; }
 
         fetchMessages();
     }, [textContent]);
@@ -118,12 +117,7 @@ const MessageBox = ({
     // this would be the form submission
     const handleSendClick = async (e: any) => {
         e.preventDefault();
-
-        if (!textContent.trim()) {
-            return;
-        }
-
-
+        if (!textContent.trim()) { return; }
 
         const newMessageObject = {
             content: textContent,
@@ -160,7 +154,7 @@ const MessageBox = ({
             toast({
                 description: `Failed to send message: ${error.message}`,
                 variant: 'destructive',
-                duration: 5000
+                duration: 2500
             });
         }
     }
@@ -198,7 +192,7 @@ const MessageBox = ({
     const bgDisabledSendButton = sendingDisabled ? 'bg-hover-foreground' : '';
     const colorIcon = sendingDisabled ? '#acacad' : '#d9d9de';
 
-    const placeholderMessage = 'Write a message...';
+
     const placeholderThreadReply = 'Reply to thread...';
 
     const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
@@ -251,7 +245,8 @@ const MessageBox = ({
         const time = calculateRelativeTimestamp(message?.time, true);
 
 
-        const renderAvatar = () => {
+        const renderAvatar: React.JSX.Element = React.useMemo(() => {
+            console.log('Rerender ! message?.profile_picture', message?.profile_picture);
             if (message?.profile_picture) {
                 return (
                     <Image
@@ -259,14 +254,14 @@ const MessageBox = ({
                         height={28}
                         width={28}
                         alt="Profile Picture"
-                        className='rounded-md'
+                        className='rounded-md select-none'
                         style={{
                             borderRadius: '6px',
                             height: '28px',
                             width: '28px'
                         }}
                     />
-                )
+                );
             } else {
                 return (
                     <Avatar className='rounded-md'>
@@ -274,13 +269,13 @@ const MessageBox = ({
                             {avatar_fallback}
                         </AvatarFallback>
                     </Avatar>
-                )
+                );
             }
-        }
+        }, [message?.profile_picture, avatar_fallback]);
 
         return (
-            <div className='flex flex-row gap-x-2 max-w-full ' style={{ maxWidth: screenWidth }}>
-                {renderAvatar()}
+            <div className='flex flex-row gap-x-2 max-w-full ' >
+                {renderAvatar}
 
                 <div className='pt-[3px]'>
                     <div className='flex flex-row text-center items-center gap-x-1'>
@@ -293,10 +288,10 @@ const MessageBox = ({
                     </div>
                     <p className='text-[14px] font-[400] text-accent opacity-70  text-wrap ' >
                         <span
-                            style={{ 
-                                wordBreak: 'break-word', 
-                                overflowWrap: 'break-word', 
-                                overflowX: 'hidden' 
+                            style={{
+                                wordBreak: 'break-word',
+                                overflowWrap: 'break-word',
+                                overflowX: 'hidden'
                             }}
                             className={` ${!allowSelectMessage ? 'select-none' : ''}`}
 
@@ -374,11 +369,8 @@ const MessageBox = ({
 
 
     return (
-        <div id='next-chat-message-box' className='p-0'
-            style={{
-                width: style.width,
-                height: style.height
-            }}
+        <div id='next-chat-message-box'
+            className={`h-[${style.height}] w-[${style.width}] p-0`}
         >
             <MessageContainer messages={messages} />
 

@@ -3,7 +3,7 @@
 
 // ui
 import React, { ReactNode, useEffect } from 'react'
-import Footer from '@/app/components/Footer'
+
 
 import {
   MessageBox,
@@ -15,7 +15,6 @@ import { useUserStore } from '@/store/useUserStore'
 
 export default function Home() {
   const {
-    user,
     setProfilePicture,
     setUsername,
     setId,
@@ -34,22 +33,6 @@ export default function Home() {
     setEmail(email)
   }, [])
 
-  console.log('user', user)
-
-
-  // const RenderProvider = ({ children }: { children?: ReactNode }) => {
-  //   return (
-  //     <div >
-  //       <main className="flex flex-col  row-start-2 items-center sm:items-start">
-  //         {children}
-  //       </main>
-  //       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-  //         <Footer />
-  //       </footer>
-  //     </div>
-  //   );
-  // };
-
 
   const thread_id = 'demo'
   const domain = 'next-chat'
@@ -59,6 +42,7 @@ export default function Home() {
       <MessageBox
         thread_id={thread_id}
         domain={domain}
+
       />
     </div>
   );
