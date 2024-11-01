@@ -106,12 +106,12 @@ const MessageBox = ({
     // this would be the form submission
     const handleSendClick = async (e: any) => {
         e.preventDefault();
-   
+
         if (!textContent.trim()) {
             return;
         }
 
-  
+
 
         const newMessageObject = {
             content: textContent,
@@ -140,7 +140,7 @@ const MessageBox = ({
 
 
                 // await fetchMessages();
-               
+
             } else {
                 throw new Error(response.error.message);
             }
@@ -227,8 +227,8 @@ const MessageBox = ({
         useEffect(() => {
             const handleResize = () => {
                 setScreenWidth(window?.innerWidth);
-                setCharacterWrapLimit(Math.round(screenWidth / 11));
-                setContent(wrapText(message?.content, characterWrapLimit));
+                // setCharacterWrapLimit(Math.round(screenWidth / 11));
+                //setContent(wrapText(message?.content, characterWrapLimit));
             };
 
             window.addEventListener('resize', handleResize);
@@ -288,8 +288,8 @@ const MessageBox = ({
                     </div>
                     <p className='text-[14px] font-[400] text-accent opacity-70  text-wrap ' >
                         <span
-                            style={{ width: (screenWidth * 0.75) }}
-                            className='overflow-x-hidden overflow-ellipsis whitespace-nowrap'
+                            style={{ wordBreak: 'break-word', overflowWrap: 'break-word', overflowX: 'hidden' }}
+
                             dangerouslySetInnerHTML={{
                                 __html: content?.replace(/\n/g, "<br />"),
                             }}
@@ -329,6 +329,7 @@ const MessageBox = ({
         }
     };
 
+    // Scroll to the bottom of the chat container
     const scrollFullDown = () => {
         if (chatContainerRef.current) {
             chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -352,7 +353,7 @@ const MessageBox = ({
         return (
             <div
                 ref={chatContainerRef}
-                className="w-full sm:w-[650px]  border border-b-0 rounded-t-md bg-secondary flex flex-col gap-y-4 p-3"
+                className="   border border-b-0 rounded-t-md bg-secondary flex flex-col gap-y-4 p-3"
                 style={{ height: '400px', overflowY: 'scroll' }}
 
             >
@@ -367,13 +368,13 @@ const MessageBox = ({
 
 
     return (
-        <div id='next-chat-message-box' className='p-0'>
+        <div id='next-chat-message-box' className='p-0' style={{ width: '600px' }}>
             <MessageContainer messages={messages} />
 
 
             <form
                 dir="ltr"
-                className='w-full sm:max-w-[650px] border rounded-b-md bg-secondary'
+                className='w-full  border rounded-b-md bg-secondary'
                 onClick={handleSendClick}
             >
                 <div>
