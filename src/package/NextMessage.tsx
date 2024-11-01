@@ -106,9 +106,12 @@ const MessageBox = ({
     // this would be the form submission
     const handleSendClick = async (e: any) => {
         e.preventDefault();
+   
         if (!textContent.trim()) {
             return;
         }
+
+  
 
         const newMessageObject = {
             content: textContent,
@@ -131,12 +134,13 @@ const MessageBox = ({
         try {
             const response = await addMessage({ message: newMessageObject });
             if (response.success) {
-
+                scrollFullDown();
                 setTextContent('');
                 setMessages((prevMessages) => [...prevMessages, newMessageObject]);
 
 
                 // await fetchMessages();
+               
             } else {
                 throw new Error(response.error.message);
             }
@@ -322,6 +326,12 @@ const MessageBox = ({
             setTimeout(() => {
                 chatContainerRef.current.scrollTop = scrollPosition;
             }, 0);
+        }
+    };
+
+    const scrollFullDown = () => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
         }
     };
 
