@@ -39,14 +39,26 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 
-type MessageBoxProps = {
+export type MessageBoxProps = {
     thread_id: string;
     domain: string;
+    style?: MessageBoxStylingProps;
+    allowSelectName?: boolean;
+    allowSelectMessage?: boolean;
 };
+
+export type MessageBoxStylingProps = {
+    width: string;
+    height: string;
+};
+
 
 const MessageBox = ({
     thread_id,
-    domain
+    domain,
+    style = { width: '600px', height: '400px' },
+    allowSelectName = false,
+    allowSelectMessage = false
 }: MessageBoxProps) => {
     // zustand
     const { toast } = useToast();
@@ -218,28 +230,21 @@ const MessageBox = ({
         message: any
     }) => {
         // this is the character bound limit to force wrap text
-        const [characterWrapLimit, setCharacterWrapLimit] = useState(30);
         const [screenWidth, setScreenWidth] = useState(300);
-        const [content, setContent] = useState(message?.content);
-
-
+        const content = message?.content;
 
         useEffect(() => {
             const handleResize = () => {
                 setScreenWidth(window?.innerWidth);
-                // setCharacterWrapLimit(Math.round(screenWidth / 11));
-                //setContent(wrapText(message?.content, characterWrapLimit));
             };
 
             window.addEventListener('resize', handleResize);
-            handleResize(); // Call once to set initial value
+            handleResize();
 
             return () => {
                 window.removeEventListener('resize', handleResize);
             };
         }, [screenWidth]);
-
-
 
         const name = message?.username || message?.email;
         const avatar_fallback = message?.email?.charAt(0).toUpperCase();
@@ -279,16 +284,21 @@ const MessageBox = ({
 
                 <div className='pt-[3px]'>
                     <div className='flex flex-row text-center items-center gap-x-1'>
-                        <p className='text-[15px] font-[500]'>
+                        <p className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`} >
                             {name}
                         </p>
-                        <p className='text-[13px] font-[300] opacity-50 mt-1'>
+                        <p className={`text-[13px] font-[300] opacity-50 mt-1 ${!allowSelectName ? 'select-none' : ''}`} >
                             {time}
                         </p>
                     </div>
                     <p className='text-[14px] font-[400] text-accent opacity-70  text-wrap ' >
                         <span
-                            style={{ wordBreak: 'break-word', overflowWrap: 'break-word', overflowX: 'hidden' }}
+                            style={{ 
+                                wordBreak: 'break-word', 
+                                overflowWrap: 'break-word', 
+                                overflowX: 'hidden' 
+                            }}
+                            className={` ${!allowSelectMessage ? 'select-none' : ''}`}
 
                             dangerouslySetInnerHTML={{
                                 __html: content?.replace(/\n/g, "<br />"),
@@ -301,7 +311,6 @@ const MessageBox = ({
     }
 
     const chatContainerRef = React.useRef<HTMLDivElement>(null);
-    const textAreaRef = useRef(null);
 
     // Track and restore scroll position on focus
     const handleTextAreaFocus = () => {
@@ -347,9 +356,6 @@ const MessageBox = ({
             }
         }, [messages]);
 
-
-
-
         return (
             <div
                 ref={chatContainerRef}
@@ -368,9 +374,13 @@ const MessageBox = ({
 
 
     return (
-        <div id='next-chat-message-box' className='p-0' style={{ width: '600px' }}>
+        <div id='next-chat-message-box' className='p-0'
+            style={{
+                width: style.width,
+                height: style.height
+            }}
+        >
             <MessageContainer messages={messages} />
-
 
             <form
                 dir="ltr"

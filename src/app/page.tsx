@@ -5,7 +5,12 @@
 import React, { ReactNode, useEffect } from 'react'
 import Footer from '@/app/components/Footer'
 
-import { MessageBox } from '@/package/NextMessage'
+import {
+  MessageBox,
+  MessageBoxProps,
+  MessageBoxStylingProps
+} from '@/package/NextMessage'
+
 import { useUserStore } from '@/store/useUserStore'
 
 export default function Home() {
@@ -50,7 +55,7 @@ export default function Home() {
   const domain = 'next-chat'
 
   return (
-    <div className='p-4 flex flex-row justify-center w-full translate-y-[50%] border-red-400 border'>
+    <div className='p-4 flex flex-row justify-center w-full translate-y-[50%] '>
       <MessageBox
         thread_id={thread_id}
         domain={domain}
