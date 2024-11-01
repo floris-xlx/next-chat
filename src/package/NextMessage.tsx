@@ -376,7 +376,10 @@ const MessageBox = ({
 
     return (
         <div id='next-chat-message-box'
-            className={`h-[${style.height}] w-[${style.width}] p-0`}
+            style={{
+                width: style.width,
+                height: style.height,
+            }}
         >
             <MessageContainer messages={messages} />
 
@@ -484,7 +487,7 @@ const MessageBox = ({
                     </TooltipProvider>
                 </div>
             </form >
-        </div>
+        </div >
     )
 }
 

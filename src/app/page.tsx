@@ -43,7 +43,10 @@ export default function Home() {
       <MessageBox
         thread_id={thread_id}
         domain={domain}
-
+        style={{
+          width: '600px',
+          height: '400px'
+        }}
       />
     </div>
   );
