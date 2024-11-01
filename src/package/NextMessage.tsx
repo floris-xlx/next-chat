@@ -5,6 +5,10 @@ import {
     Paperclip,
     Smile,
     AtSign,
+    Reply,
+    Trash,
+    Pencil,
+    Ellipsis
 } from "lucide-react";
 
 import React, { Fragment, useState, useEffect, useRef } from 'react';
@@ -276,32 +280,38 @@ const MessageBox = ({
         }, [message?.profile_picture, avatar_fallback]);
 
         return (
-            <div className='flex flex-row gap-x-2 max-w-full ' >
-                {renderAvatar}
-
-
-                <div className='pt-[3px]'>
-                    <div className='flex flex-row text-center items-center gap-x-1'>
-                        <p className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`} >
-                            {name}
-                        </p>
-                        <p className={`text-[13px] font-[300] opacity-50 mt-1 ${!allowSelectName ? 'select-none' : ''}`} >
-                            {time}
+            <div className='flex flex-row justify-between items-center w-full group'>
+                <div className='flex flex-row gap-x-2 max-w-full ' >
+                    {renderAvatar}
+                    <div className='pt-[3px]'>
+                        <div className='flex flex-row text-center items-center gap-x-1'>
+                            <p className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`} >
+                                {name}
+                            </p>
+                            <p className={`text-[13px] font-[300] opacity-50 mt-1 ${!allowSelectName ? 'select-none' : ''}`} >
+                                {time}
+                            </p>
+                        </div>
+                        <p className='text-[14px] font-[400] text-accent opacity-70 text-wrap'>
+                            <span
+                                style={{
+                                    wordBreak: 'break-word',
+                                    overflowWrap: 'break-word',
+                                    overflowX: 'hidden'
+                                }}
+                                className={` ${!allowSelectMessage ? 'select-none' : ''}`}
+                                dangerouslySetInnerHTML={{
+                                    __html: content?.replace(/\n/g, "<br />"),
+                                }}
+                            />
                         </p>
                     </div>
-                    <p className='text-[14px] font-[400] text-accent opacity-70 text-wrap'>
-                        <span
-                            style={{
-                                wordBreak: 'break-word',
-                                overflowWrap: 'break-word',
-                                overflowX: 'hidden'
-                            }}
-                            className={` ${!allowSelectMessage ? 'select-none' : ''}`}
-                            dangerouslySetInnerHTML={{
-                                __html: content?.replace(/\n/g, "<br />"),
-                            }}
-                        />
-                    </p>
+                </div>
+
+                <div className='flex flex-row items-center opacity-0 group-hover:opacity-100 transition-opacity'>
+                    <Button variant={'icon_hover'} className='hover:bg-hover bg-transparent transition rounded-md border-0 p-2 '>
+                        <Reply size={18} className='text-secondary-foreground opacity-80' />
+                    </Button>
                 </div>
             </div>
         )
