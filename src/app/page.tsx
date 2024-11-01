@@ -37,6 +37,7 @@ export default function Home() {
   const thread_id = 'demo'
   const domain = 'next-chat'
 
+
   return (
     <div className='p-4 flex flex-row justify-center w-full translate-y-[50%] '>
       <MessageBox

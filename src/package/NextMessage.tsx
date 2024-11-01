@@ -45,6 +45,7 @@ export type MessageBoxProps = {
     allowSelectName?: boolean;
     allowSelectMessage?: boolean;
     placeholderMessage?: string;
+    avatar?: React.ReactNode;
 };
 
 export type MessageBoxStylingProps = {
@@ -60,6 +61,7 @@ const MessageBox = ({
     allowSelectName = false,
     allowSelectMessage = false,
     placeholderMessage = 'Write a message...',
+    avatar
 }: MessageBoxProps) => {
     // zustand
     const { toast } = useToast();
@@ -218,7 +220,7 @@ const MessageBox = ({
 
 
 
-    const Message = ({
+    const Message = React.memo(({
         message
     }: {
         message: any
@@ -244,12 +246,12 @@ const MessageBox = ({
         const avatar_fallback = message?.email?.charAt(0).toUpperCase();
         const time = calculateRelativeTimestamp(message?.time, true);
 
-
         const renderAvatar: React.JSX.Element = React.useMemo(() => {
             console.log('Rerender ! message?.profile_picture', message?.profile_picture);
             if (message?.profile_picture) {
+                // using normal <img> as the next one keeps re-rendering?!
                 return (
-                    <Image
+                    <img
                         src={message.profile_picture}
                         height={28}
                         width={28}
@@ -277,6 +279,7 @@ const MessageBox = ({
             <div className='flex flex-row gap-x-2 max-w-full ' >
                 {renderAvatar}
 
+
                 <div className='pt-[3px]'>
                     <div className='flex flex-row text-center items-center gap-x-1'>
                         <p className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`} >
@@ -286,7 +289,7 @@ const MessageBox = ({
                             {time}
                         </p>
                     </div>
-                    <p className='text-[14px] font-[400] text-accent opacity-70  text-wrap ' >
+                    <p className='text-[14px] font-[400] text-accent opacity-70 text-wrap'>
                         <span
                             style={{
                                 wordBreak: 'break-word',
@@ -294,7 +297,6 @@ const MessageBox = ({
                                 overflowX: 'hidden'
                             }}
                             className={` ${!allowSelectMessage ? 'select-none' : ''}`}
-
                             dangerouslySetInnerHTML={{
                                 __html: content?.replace(/\n/g, "<br />"),
                             }}
@@ -303,7 +305,11 @@ const MessageBox = ({
                 </div>
             </div>
         )
-    }
+    });
+
+    Message.displayName = 'Message';
+
+
 
     const chatContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -313,12 +319,12 @@ const MessageBox = ({
         if (chatContainerRef.current) {
             const scrollPosition = chatContainerRef.current.scrollTop;
 
-            setTimeout(() => {
+            requestAnimationFrame(() => {
                 chatContainerRef.current.scrollTop = scrollPosition;
-            }, 0);
+            });
         }
 
-        setIsTextAreaFocused(true);
+        setTimeout(() => setIsTextAreaFocused(true), 50);
     };
 
 
@@ -481,6 +487,10 @@ const MessageBox = ({
         </div>
     )
 }
+
+
+// display name for message
+MessageBox.displayName = 'MessageBox';
 
 
 
