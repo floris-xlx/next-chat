@@ -1,45 +1,28 @@
 'use client';
 
-import {
-    SendHorizonal,
-    Paperclip,
-    Smile,
-    AtSign,
-    Reply,
-    Trash,
-    Pencil,
-    Ellipsis
-} from "lucide-react";
 
 import React, { Fragment, useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
 // actions
 import { addMessage, fetchMessagesByDomainAndThread } from '@/actions/messaging';
-
-// utils
-import { calculateRelativeTimestamp } from '@/utils/date-utils';
-
-// zustand
-import { useNextMessageStore } from "./store/useNextMessageStore";
-
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+//hooks
 import { useToast } from '@/hooks/use-toast';
-import { useUserStore, useViewStore } from '@/store/store';
-import { Textarea } from "@/components/ui/textarea";
-
-// event logging
-import { addEventLog, EventLogEntry } from '@/actions/event_log';
-import { auditLogUser, AuditLogUserEntry } from '@/actions/audit_log';
-
+import { useCanSendMsg } from '@/package/hooks/use-can-send-msg';
+import { useIsFirstRender } from "@uidotdev/usehooks";
+// interfaces
+import handleSendClick from '@/package/interfaces/handleSendClick';
+import MessageActionsBar from '@/package/components/MessageActionsBar';
+// utils
+import { countCharacters } from '@/package/utils/utils';
+import { calculateRelativeTimestamp } from '@/utils/date-utils';
+import { restoreScrollPosition, scrollFullDown } from '@/package/utils/viewport-utils';
 // ui
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Reply } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+// store
+import { useUserStore } from '@/store/store';
+import { useNextMessageStore } from "./store/useNextMessageStore";
 
 
 export type MessageBoxProps = {
@@ -75,40 +58,23 @@ const MessageBox = ({
     // usestate
     const [textContent, setTextContent] = useState('');
     const [messages, setMessages] = useState<string[]>([]);
+    const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
+
+    const [referencedMessageId, setReferencedMessageId] = useState('');
+
+    // responsible for disabling the send button
+    const { sendingDisabled } = useCanSendMsg({
+        textContent: textContent,
+        isTextAreaFocused: isTextAreaFocused
+    });
 
     React.useEffect(() => {
         setHasMounted(false);
     }, []);
 
-
-    const handleAtClick = async () => {
-        toast({
-            description: 'handleAtClick was clicked',
-            variant: 'system',
-            duration: 5000
-        })
-    }
-
-    const handleEmojiClick = async () => {
-        toast({
-            description: 'handleEmojiClick was clicked',
-            variant: 'system',
-            duration: 5000
-        })
-    }
-
-    const handleAttachClick = async () => {
-        toast({
-            description: 'handleAttachClick was clicked',
-            variant: 'system',
-            duration: 5000
-        })
-    }
-
     const fetchMessages = async () => {
         const response = await fetchMessagesByDomainAndThread(domain, thread_id);
         if (response.success) {
-
             setMessages(response.data);
         }
     }
@@ -119,139 +85,32 @@ const MessageBox = ({
         fetchMessages();
     }, [textContent]);
 
-
-    // this would be the form submission
-    const handleSendClick = async (e: any) => {
-        e.preventDefault();
-        if (!textContent.trim()) { return; }
-
-        const newMessageObject = {
-            content: textContent,
-            user_id: user?.id,
-            organization: user?.organization,
-            referenced_message_id: referencedMessageId || null,
-            is_reference: !!referencedMessageId,
-            character_count: countCharacters(textContent),
-            mentions: [], // awaiting implementation
-            attachments: [], // awaiting implementation
-            reactions: [], // awaiting implementation
-            thread_id: thread_id,
-            domain: domain,
-            profile_picture: user?.profile_picture,
-            username: user?.username,
-            email: user?.email,
-            verified: false
-        };
-
-        try {
-            const response = await addMessage({ message: newMessageObject });
-            if (response.success) {
-                scrollFullDown();
-                setTextContent('');
-                setMessages((prevMessages) => [...prevMessages, newMessageObject]);
-
-
-                // await fetchMessages();
-
-            } else {
-                throw new Error(response.error.message);
-            }
-        } catch (error: any) {
-            toast({
-                description: `Failed to send message: ${error.message}`,
-                variant: 'destructive',
-                duration: 2500
-            });
-        }
-    }
-
-    // tooltip texts
-    const toolTipTexts = {
-        at: 'Mention someone',
-        emoji: 'Add emoji',
-        attach: 'Attach files',
-        send: 'Send'
-    }
-
-
-    const countCharacters = (text: string) => {
-        return text.length;
-    }
-
     const [textAreaHeight, setTextAreaHeight] = useState(32 + 32);
-    const characterLimit = 1000;
+
+    // this is for the textarea height adjustment
     useEffect(() => {
         const characters = countCharacters(textContent);
         if (characters >= 20) {
-            const newHeight = Math.min(160, 64 + Math.ceil((characters / 4) / 16) * 16);
+            const newHeight = Math.min(160, 64 + Math.ceil((characters / 4) / 16) * 12);
             setTextAreaHeight(newHeight);
         }
     }, [textContent]);
 
-
-
-
-
-    const [sendingDisabled, setSendingDisabled] = useState(true);
-
-    const classessDisabledCursor = sendingDisabled ? 'cursor-not-allowed pointer-events-none' : 'cursor-pointer';
-    const bgDisabledSendButton = sendingDisabled ? 'bg-hover-foreground' : '';
-    const colorIcon = sendingDisabled ? '#acacad' : '#d9d9de';
-
-
-    const placeholderThreadReply = 'Reply to thread...';
-
-    const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
-
-    console.log('isTextAreaFocused', isTextAreaFocused);
-
-
-
-    // regulates whether the message can be sent if there is no content
-    useEffect(() => {
-        const characters = countCharacters(textContent);
-        if (characters < 1 || isTextAreaFocused === false) {
-            setSendingDisabled(true);
-        } else {
-            setSendingDisabled(false);
-        }
-    }, [textContent, isTextAreaFocused]);
-
-
-    // FIXME: awaiting implementation
-    const [referencedMessageId, setReferencedMessageId] = useState('');
-
-
-
-
     const Message = React.memo(({
-        message
+        message,
+        id = 'message-id'
     }: {
-        message: any
+        message: any,
+        id?: string
     }) => {
         // this is the character bound limit to force wrap text
-        const [screenWidth, setScreenWidth] = useState(300);
+
         const content = message?.content;
-
-        useEffect(() => {
-            const handleResize = () => {
-                setScreenWidth(window?.innerWidth);
-            };
-
-            window.addEventListener('resize', handleResize);
-            handleResize();
-
-            return () => {
-                window.removeEventListener('resize', handleResize);
-            };
-        }, [screenWidth]);
-
         const name = message?.username || message?.email;
         const avatar_fallback = message?.email?.charAt(0).toUpperCase();
         const time = calculateRelativeTimestamp(message?.time, true);
 
         const renderAvatar: React.JSX.Element = React.useMemo(() => {
-            console.log('Rerender ! message?.profile_picture', message?.profile_picture);
             if (message?.profile_picture) {
                 // using normal <img> as the next one keeps re-rendering?!
                 return (
@@ -260,11 +119,12 @@ const MessageBox = ({
                         height={28}
                         width={28}
                         alt="Profile Picture"
-                        className='rounded-md select-none'
+                        className='rounded-md select-none mr-2'
                         style={{
                             borderRadius: '6px',
                             height: '28px',
-                            width: '28px'
+                            width: '28px',
+                            marginTop: '5px',
                         }}
                     />
                 );
@@ -279,30 +139,25 @@ const MessageBox = ({
             }
         }, [message?.profile_picture, avatar_fallback]);
 
+
         return (
-            <div className='flex flex-row justify-between items-center w-full group'>
-                <div className='flex flex-row gap-x-2 max-w-full ' >
+            <div id={id} className='flex flex-row justify-between  w-full group'>
+                <div className='flex flex-row max-w-full gap-x-2' >
                     {renderAvatar}
-                    <div className='pt-[3px]'>
+                    <div className='pl-2'>
                         <div className='flex flex-row text-center items-center gap-x-1'>
                             <p className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`} >
                                 {name}
                             </p>
-                            <p className={`text-[13px] font-[300] opacity-50 mt-1 ${!allowSelectName ? 'select-none' : ''}`} >
+                            <p className={`text-[13px] font-[300] opacity-50  ${!allowSelectName ? 'select-none' : ''}`} >
                                 {time}
                             </p>
                         </div>
                         <p className='text-[14px] font-[400] text-accent opacity-70 text-wrap'>
                             <span
-                                style={{
-                                    wordBreak: 'break-word',
-                                    overflowWrap: 'break-word',
-                                    overflowX: 'hidden'
-                                }}
+                                style={{ wordBreak: 'break-word', overflowWrap: 'break-word', overflowX: 'hidden' }}
                                 className={` ${!allowSelectMessage ? 'select-none' : ''}`}
-                                dangerouslySetInnerHTML={{
-                                    __html: content?.replace(/\n/g, "<br />"),
-                                }}
+                                dangerouslySetInnerHTML={{ __html: content?.replace(/\n/g, "<br />") }}
                             />
                         </p>
                     </div>
@@ -319,67 +174,131 @@ const MessageBox = ({
 
     Message.displayName = 'Message';
 
+    const chatContainerRef = useRef<HTMLDivElement>(null);
 
 
-    const chatContainerRef = React.useRef<HTMLDivElement>(null);
 
-    // Track and restore scroll position on focus
+
+    // Handle focus/blur events
     const handleTextAreaFocus = () => {
-
-        if (chatContainerRef.current) {
-            const scrollPosition = chatContainerRef.current.scrollTop;
-
-            requestAnimationFrame(() => {
-                chatContainerRef.current.scrollTop = scrollPosition;
-            });
-        }
-
-        setTimeout(() => setIsTextAreaFocused(true), 50);
+        setIsTextAreaFocused(true);
     };
 
-
-    // Track and restore scroll position on focus or blur
-    const restoreScrollPosition = () => {
-        if (chatContainerRef.current) {
-            const scrollPosition = chatContainerRef.current.scrollTop;
-
-            setTimeout(() => {
-                chatContainerRef.current.scrollTop = scrollPosition;
-            }, 0);
-        }
+    const handleTextAreaBlur = () => {
+        setIsTextAreaFocused(false);
     };
 
-    // Scroll to the bottom of the chat container
-    const scrollFullDown = () => {
-        if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-        }
+    const ScrollContainer: React.FC<{
+        children: React.ReactNode
+    }> = ({
+        children
+    }) => {
+            const outerDiv = useRef(null);
+            const innerDiv = useRef(null);
+
+            const prevInnerDivHeight = useRef(null);
+
+            const [showScrollButton, setShowScrollButton] = useState(false);
+
+            useEffect(() => {
+                const outerDivHeight = outerDiv.current.clientHeight;
+                const innerDivHeight = innerDiv.current.clientHeight;
+                const outerDivScrollTop = outerDiv.current.scrollTop;
+
+                if (
+                    !prevInnerDivHeight.current ||
+                    outerDivScrollTop === prevInnerDivHeight.current - outerDivHeight
+                ) {
+                    outerDiv.current.scrollTo({
+                        top: innerDivHeight! - outerDivHeight!,
+                        left: 0,
+                        behavior: prevInnerDivHeight.current ? "smooth" : "auto"
+                    });
+                } else {
+                    setShowScrollButton(true);
+                };
+
+                prevInnerDivHeight.current = innerDivHeight;
+            }, [children]);
+
+            const handleScrollButtonClick = React.useCallback(() => {
+                const outerDivHeight = outerDiv.current.clientHeight;
+                const innerDivHeight = innerDiv.current.clientHeight;
+
+                outerDiv.current.scrollTo({
+                    top: innerDivHeight! - outerDivHeight!,
+                    left: 0,
+                    behavior: "smooth"
+                });
+
+                setShowScrollButton(false);
+            }, []);
+
+            return (
+                <div
+                    style={{
+                        position: "relative",
+                        height: "100%"
+                    }}
+                >
+                    <div
+                        ref={outerDiv}
+                        style={{
+                            position: "relative",
+                            height: "100%",
+                            overflowY: "scroll"
+                        }}
+                    >
+                        <div
+                            ref={innerDiv}
+                            style={{
+                                position: "relative"
+                            }}
+                        >
+                            {children}
+                        </div>
+                    </div>
+
+                </div>
+            )
+        };
+
+    // Handle click wrapper
+    const HandleClickWrapper = async (e: any) => {
+        e.preventDefault();
+        await handleSendClick(
+            e,
+            textContent,
+            user,
+            referencedMessageId,
+            countCharacters,
+            thread_id,
+            domain,
+            setTextContent,
+            setMessages,
+            toast,
+            chatContainerRef
+        );
     };
 
-
-    const MessageContainer: React.FC<{
-        messages?: string[];
-    }> = ({ messages = [] }) => {
-        // Scroll to the bottom only when new messages are added
-        useEffect(() => {
-            if (chatContainerRef.current) {
-                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-            }
-        }, [messages]);
+    const MessageContainer: React.FC<{ messages?: any[] }> = ({ messages = [] }) => {
+        const uniqueMessages = Array.from(new Set(messages.map(message => message.message_id)))
+            .map(uniqueId => messages.find(msg => msg.message_id === uniqueId));
 
         return (
-            <div
-                ref={chatContainerRef}
-                className="   border border-b-0 rounded-t-md bg-secondary flex flex-col gap-y-4 p-3"
-                style={{ height: '400px', overflowY: 'scroll' }}
-
-            >
-                {messages.map((message, index) => (
-                    <div key={index} style={{ overflowWrap: 'break-word' }}>
-                        <Message key={index} message={message} />
-                    </div>
-                ))}
-            </div>
+            <ScrollContainer>
+                <div className="border border-b-0 rounded-t-md bg-secondary flex flex-col gap-y-4 p-3">
+                    {uniqueMessages.map((message, index) => (
+                        <div key={index} style={{ overflowWrap: 'break-word' }}>
+                            <Message
+                                key={index}
+                                id={message?.message_id}
+                                message={message}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </ScrollContainer>
         );
     };
 
@@ -388,7 +307,7 @@ const MessageBox = ({
         <div id='next-chat-message-box'
             style={{
                 width: style.width,
-                height: style.height,
+                height: style.height
             }}
         >
             <MessageContainer messages={messages} />
@@ -396,7 +315,7 @@ const MessageBox = ({
             <form
                 dir="ltr"
                 className='w-full  border rounded-b-md bg-secondary'
-                onClick={handleSendClick}
+                onClick={HandleClickWrapper}
             >
                 <div>
                     <Textarea
@@ -410,92 +329,23 @@ const MessageBox = ({
                             minHeight: textAreaHeight + 'px',
                         }}
                         onFocus={handleTextAreaFocus}
-                        onBlur={() => {
-                            restoreScrollPosition();
-                            setIsTextAreaFocused(false);
-                        }}
+                        onBlur={() => handleTextAreaBlur()}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
-                                handleSendClick(e);
+                                HandleClickWrapper(e);
                                 e.preventDefault();
                             }
                         }}
                     />
                 </div>
 
-                <div className=' p-4 flex flex-row justify-between  '>
-                    <TooltipProvider delayDuration={500}>
-                        <div className='flex flex-row items-center w-fit'>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Button
-                                        variant={'icon_naked'}
-                                        onClick={handleAtClick}
-                                        size={'icon_small'}
-                                        className='rounded-md hover:bg-hover-foreground'
-                                        type={'button'}
-                                    >
-                                        <AtSign size={18} className='text-icon' />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className='p-0 px-1'>
-                                    <p className='text-[10px] font-[400]'>{toolTipTexts.at}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Button
-                                        variant={'icon_naked'}
-                                        onClick={handleEmojiClick}
-                                        size={'icon_small'}
-                                        className='rounded-md hover:bg-hover-foreground'
-                                        type={'button'}
-                                    >
-                                        <Smile size={18} className='text-icon' />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className='p-0 px-1'>
-                                    <p className='text-[10px] font-[400]'>{toolTipTexts.emoji}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Button
-                                        variant={'icon_naked'}
-                                        onClick={handleAttachClick}
-                                        size={'icon_small'}
-                                        className='rounded-md hover:bg-hover-foreground'
-                                        type={'button'}
-                                    >
-                                        <Paperclip size={18} className='text-icon' />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className='p-0 px-1'>
-                                    <p className='text-[10px] font-[400]'>{toolTipTexts.attach}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </div>
-                        <div>
-                            <Tooltip>
-                                <TooltipTrigger className={classessDisabledCursor}>
-                                    <Button
-                                        variant={'brand'}
-                                        onClick={handleSendClick}
-                                        size={'icon_small'}
-                                        className={`rounded-md   ${bgDisabledSendButton}`}
-                                        type={'button'}
-                                        disabled={sendingDisabled}
-                                    >
-                                        <SendHorizonal size={18} color={colorIcon} />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className='p-0 px-1'>
-                                    <p className='text-[10px] font-[400]'>{toolTipTexts.send}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </div>
-                    </TooltipProvider>
-                </div>
+                <MessageActionsBar
+                    sendingDisabled={sendingDisabled}
+                    domain={domain}
+                    textContent={textContent}
+                    referencedMessageId={referencedMessageId}
+                />
+
             </form >
         </div >
     )
@@ -504,12 +354,5 @@ const MessageBox = ({
 
 // display name for message
 MessageBox.displayName = 'MessageBox';
-
-
-
-
-
-
-
 
 export { MessageBox };
