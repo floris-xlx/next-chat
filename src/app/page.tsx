@@ -27,6 +27,7 @@ export default function Home() {
   const [username, setUsernameState] = useState('floris');
   const [userId, setUserIdState] = useState('floris-demo-nextchat');
   const [email, setEmailState] = useState('floris@xylex.ai');
+  const [update_interval_in_ms, setUpdateInterval] = useState(1000)
 
   useEffect(() => {
     setProfilePicture(profilePicture)
@@ -96,6 +97,17 @@ export default function Home() {
           label={'User ID'}
           size={'sm'}
           placeholder={'Enter your user ID'}
+          className='bg-background-foreground text-[16px]'
+        />
+
+        <Input
+          id={'set-update-interval-demo-input'}
+          value={update_interval_in_ms}
+          onChange={(e) => setUpdateInterval(parseInt(e.target.value))}
+          variant={'default'}
+          label={'Update Interval'}
+          size={'sm'}
+          placeholder={'Enter your update interval in ms'}
           className='bg-background-foreground text-[16px]'
         />
       </div>

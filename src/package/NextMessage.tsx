@@ -33,6 +33,7 @@ export type MessageBoxProps = {
     allowSelectMessage?: boolean;
     placeholderMessage?: string;
     avatar?: React.ReactNode;
+    update_interval_in_ms?: number;
 };
 
 export type MessageBoxStylingProps = {
@@ -48,7 +49,8 @@ const MessageBox = ({
     allowSelectName = false,
     allowSelectMessage = false,
     placeholderMessage = 'Write a message...',
-    avatar
+    avatar,
+    update_interval_in_ms = 1000
 }: MessageBoxProps) => {
     // zustand
     const { toast } = useToast();
@@ -78,6 +80,19 @@ const MessageBox = ({
             setMessages(response.data);
         }
     }
+
+
+
+    // this is for the message update interval
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchMessages();
+        }, update_interval_in_ms);
+
+        return () => clearInterval(interval);
+    }, [update_interval_in_ms]);
+
+
 
     useEffect(() => {
         if (!thread_id || !domain) { return; }
