@@ -26,6 +26,7 @@
     "react-dom": "19.0.0-rc-69d4b800-20241021",
     "react-sliding-item": "^1.0.0",
     "tailwind-merge": "^2.5.4",
+    "tailwindcss-animate": "^1.0.7",
     "word-wrap": "^1.2.5",
     "zustand": "^5.0.0"
   },
