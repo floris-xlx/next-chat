@@ -5,7 +5,7 @@
 import React from 'react';
 
 
-import { addMessage, fetchMessagesByDomainAndThread } from '@/actions/messaging';
+import { addMessage } from '@/actions/messaging';
 import { scrollFullDown } from '@/package/utils/viewport-utils';
 
 const handleSendClick = async (
@@ -47,7 +47,9 @@ const handleSendClick = async (
         if (response.success) {
             scrollFullDown(containerRef);
             setTextContent('');
-            setMessages((prevMessages) => [...prevMessages, newMessageObject]);
+
+            // floris; temp removed the client-only ghost message for now
+            // setMessages((prevMessages) => [...prevMessages, newMessageObject]);
         } else {
             throw new Error(response.error.message);
         }

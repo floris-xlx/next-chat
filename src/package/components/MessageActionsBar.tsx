@@ -38,12 +38,14 @@ export const MessageActionsBar = ({
     sendingDisabled,
     domain,
     textContent,
-    referencedMessageId
+    referencedMessageId,
+    thread_id
 }: {
     sendingDisabled: boolean,
     domain: string,
     textContent: string,
-    referencedMessageId: string | null
+    referencedMessageId: string | null,
+    thread_id: string
 }) => {
     const { toast } = useToast();
     const { user } = useUserStore();

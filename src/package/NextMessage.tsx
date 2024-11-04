@@ -64,6 +64,16 @@ const MessageBox = ({
 
     const [referencedMessageId, setReferencedMessageId] = useState('');
 
+
+    const getHighestTimeFromMessageSum = (messages: any[]) => {
+        if (messages.length === 0) { return 0; }
+        return Math.max(...messages.map((message) => message.time));
+    };
+    const [time_cursor, setTimeCursor] = useState(getHighestTimeFromMessageSum(messages));
+
+    console.log('timeCursor', time_cursor);
+    console.log('messages', messages)
+
     // responsible for disabling the send button
     const { sendingDisabled } = useCanSendMsg({
         textContent: textContent,
@@ -72,14 +82,40 @@ const MessageBox = ({
 
     React.useEffect(() => {
         setHasMounted(false);
+        setTimeCursor(1);
     }, []);
 
+
+
+
     const fetchMessages = async () => {
-        const response = await fetchMessagesByDomainAndThread(domain, thread_id);
-        if (response.success) {
-            setMessages(response.data);
+        const response = await fetchMessagesByDomainAndThread(domain, thread_id, time_cursor);
+
+        if (response?.data?.length > 0) {
+            console.log('response', response);
+
+            setMessages(response?.data);
+
         }
     }
+
+    useEffect(() => {
+        if (!thread_id || !domain) { return; }
+
+        const fetchAndSetMessages = async () => {
+            const response = await fetchMessagesByDomainAndThread(domain, thread_id, time_cursor);
+
+            if (response?.data?.length > 0) {
+                console.log('response', response);
+
+                setMessages(response?.data);
+                const newTimeCursor = getHighestTimeFromMessageSum(response?.data);
+                setTimeCursor(newTimeCursor);
+            }
+        };
+
+        fetchAndSetMessages();
+    }, [thread_id, domain, time_cursor]);
 
 
 
@@ -297,20 +333,11 @@ const MessageBox = ({
     };
 
     const MessageContainer: React.FC<{ messages?: any[] }> = ({ messages = [] }) => {
-        const [uniqueMessages, setUniqueMessages] = useState<any[]>([]);
-
-        useEffect(() => {
-            const uniqueMessagesLocal = Array.from(new Set(messages.map(message => message.message_id)))
-                .map(uniqueId => messages.find(msg => msg.message_id === uniqueId));
-
-            setUniqueMessages(uniqueMessagesLocal);
-        }, [messages]);
-
         return (
             <div style={{ height: '400px' }} className='border border-b-0 rounded-t-md bg-secondary'>
                 <ScrollContainer>
                     <div className=" flex flex-col gap-y-4 p-3">
-                        {uniqueMessages.map((message, index) => (
+                        {messages.map((message, index) => (
                             <div key={index} style={{ overflowWrap: 'break-word' }}>
                                 <Message
                                     key={index}
@@ -367,6 +394,7 @@ const MessageBox = ({
                     domain={domain}
                     textContent={textContent}
                     referencedMessageId={referencedMessageId}
+                    thread_id={thread_id}
                 />
 
             </form >

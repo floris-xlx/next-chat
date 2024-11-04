@@ -24,9 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserStore, useViewStore } from '@/store/store';
 import { Textarea } from "@/components/ui/textarea";
 
-// event logging
-import { addEventLog, EventLogEntry } from '@/actions/event_log';
-import { auditLogUser, AuditLogUserEntry } from '@/actions/audit_log';
+
 
 // ui
 import {
@@ -41,11 +39,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 type MessageBoxProps = {
     thread_id: string;
     domain: string;
+    time_cursor?: number;
 };
 
 const MessageBox = ({
     thread_id,
-    domain
+    domain,
+    time_cursor
 }: MessageBoxProps) => {
     // zustand
     const { toast } = useToast();
@@ -83,7 +83,7 @@ const MessageBox = ({
     }
 
     const fetchMessages = async () => {
-        const response = await fetchMessagesByDomainAndThread(domain, thread_id);
+        const response = await fetchMessagesByDomainAndThread(domain, thread_id, time_cursor);
         if (response.success) {
 
             setMessages(response.data);
