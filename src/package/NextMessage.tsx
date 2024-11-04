@@ -297,8 +297,14 @@ const MessageBox = ({
     };
 
     const MessageContainer: React.FC<{ messages?: any[] }> = ({ messages = [] }) => {
-        const uniqueMessages = Array.from(new Set(messages.map(message => message.message_id)))
-            .map(uniqueId => messages.find(msg => msg.message_id === uniqueId));
+        const [uniqueMessages, setUniqueMessages] = useState<any[]>([]);
+
+        useEffect(() => {
+            const uniqueMessagesLocal = Array.from(new Set(messages.map(message => message.message_id)))
+                .map(uniqueId => messages.find(msg => msg.message_id === uniqueId));
+
+            setUniqueMessages(uniqueMessagesLocal);
+        }, [messages]);
 
         return (
             <div style={{ height: '400px' }} className='border border-b-0 rounded-t-md bg-secondary'>
