@@ -286,19 +286,21 @@ const MessageBox = ({
             .map(uniqueId => messages.find(msg => msg.message_id === uniqueId));
 
         return (
-            <ScrollContainer>
-                <div className="border border-b-0 rounded-t-md bg-secondary flex flex-col gap-y-4 p-3">
-                    {uniqueMessages.map((message, index) => (
-                        <div key={index} style={{ overflowWrap: 'break-word' }}>
-                            <Message
-                                key={index}
-                                id={message?.message_id}
-                                message={message}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </ScrollContainer>
+            <div style={{ height: '400px' }} className='border border-b-0 rounded-t-md bg-secondary'>
+                <ScrollContainer>
+                    <div className=" flex flex-col gap-y-4 p-3">
+                        {uniqueMessages.map((message, index) => (
+                            <div key={index} style={{ overflowWrap: 'break-word' }}>
+                                <Message
+                                    key={index}
+                                    id={message?.message_id}
+                                    message={message}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </ScrollContainer>
+            </div>
         );
     };
 
