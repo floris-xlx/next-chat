@@ -7,14 +7,13 @@ import { addMessage, fetchMessagesByDomainAndThread } from '@/actions/messaging'
 //hooks
 import { useToast } from '@/hooks/use-toast';
 import { useCanSendMsg } from '@/package/hooks/use-can-send-msg';
-import { useIsFirstRender } from "@uidotdev/usehooks";
-// interfaces
+
 import handleSendClick from '@/package/interfaces/handleSendClick';
 import MessageActionsBar from '@/package/components/MessageActionsBar';
 // utils
 import { countCharacters } from '@/package/utils/utils';
 import { calculateRelativeTimestamp } from '@/utils/date-utils';
-import { restoreScrollPosition, scrollFullDown } from '@/package/utils/viewport-utils';
+
 // ui
 import { Reply } from "lucide-react";
 import { Button } from '@/components/ui/button';
@@ -65,14 +64,6 @@ const MessageBox = ({
     const [referencedMessageId, setReferencedMessageId] = useState('');
 
 
-    const getHighestTimeFromMessageSum = (messages: any[]) => {
-        if (messages.length === 0) { return 0; }
-        return Math.max(...messages.map((message) => message.time));
-    };
-    const [time_cursor, setTimeCursor] = useState(getHighestTimeFromMessageSum(messages));
-
-    console.log('timeCursor', time_cursor);
-    console.log('messages', messages)
 
     // responsible for disabling the send button
     const { sendingDisabled } = useCanSendMsg({
@@ -80,61 +71,26 @@ const MessageBox = ({
         isTextAreaFocused: isTextAreaFocused
     });
 
-    React.useEffect(() => {
+    useEffect(() => {
         setHasMounted(false);
-        setTimeCursor(1);
     }, []);
-
-
-
-
-    const fetchMessages = async () => {
-        const response = await fetchMessagesByDomainAndThread(domain, thread_id, time_cursor);
-
-        if (response?.data?.length > 0) {
-            console.log('response', response);
-
-            setMessages(response?.data);
-
-        }
-    }
 
     useEffect(() => {
         if (!thread_id || !domain) { return; }
 
         const fetchAndSetMessages = async () => {
-            const response = await fetchMessagesByDomainAndThread(domain, thread_id, time_cursor);
+            const response = await fetchMessagesByDomainAndThread(domain, thread_id);
 
             if (response?.data?.length > 0) {
-                console.log('response', response);
-
+         
                 setMessages(response?.data);
-                const newTimeCursor = getHighestTimeFromMessageSum(response?.data);
-                setTimeCursor(newTimeCursor);
+
             }
         };
 
         fetchAndSetMessages();
-    }, [thread_id, domain, time_cursor]);
+    }, [thread_id, domain]);
 
-
-
-    // this is for the message update interval
-    useEffect(() => {
-        const interval = setInterval(() => {
-            fetchMessages();
-        }, update_interval_in_ms);
-
-        return () => clearInterval(interval);
-    }, [update_interval_in_ms]);
-
-
-
-    useEffect(() => {
-        if (!thread_id || !domain) { return; }
-
-        fetchMessages();
-    }, [textContent]);
 
     const [textAreaHeight, setTextAreaHeight] = useState(32 + 32);
 
@@ -391,10 +347,6 @@ const MessageBox = ({
 
                 <MessageActionsBar
                     sendingDisabled={sendingDisabled}
-                    domain={domain}
-                    textContent={textContent}
-                    referencedMessageId={referencedMessageId}
-                    thread_id={thread_id}
                 />
 
             </form >

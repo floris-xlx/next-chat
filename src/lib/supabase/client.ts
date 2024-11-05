@@ -6,3 +6,10 @@ export function createXylexClient() {
         process.env.SUPABASE_ANON_KEY_XYLEX!
     );
 }
+
+export function createClient() {
+    return createBrowserClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_ANON_KEY!
+    );
+}
