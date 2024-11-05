@@ -56,6 +56,7 @@ const MessageBox = ({
     const [textContent, setTextContent] = useState('');
     const [messages, setMessages] = useState<string[]>([]);
 
+    console.log('messages', messages);
 
     const handleAtClick = async () => {
         toast({
@@ -167,6 +168,8 @@ const MessageBox = ({
         }
     }, [textContent]);
 
+    console.log('textContent', textContent);
+    console.log('textAreaHeight', textAreaHeight);
 
 
 
@@ -180,7 +183,7 @@ const MessageBox = ({
     const placeholderThreadReply = 'Reply to thread...';
 
     const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
-
+    console.log('isTextAreaFocused', isTextAreaFocused);
 
 
 
@@ -206,7 +209,8 @@ const MessageBox = ({
     }: {
         message: any
     }) => {
-    
+        console.log('message', message);
+
         const name = message?.username || message?.email;
         const avatar_fallback = message?.email?.charAt(0).toUpperCase();
         const time = calculateRelativeTimestamp(message?.time, true);
@@ -267,7 +271,7 @@ const MessageBox = ({
     }> = ({
         messages = []
     }) => {
-    
+            console.log('messages', messages);
 
             const containerRef = React.useRef<HTMLDivElement>(null);
 

@@ -5,7 +5,10 @@ import {
     Paperclip,
     Smile,
     AtSign,
-
+    Reply,
+    Trash,
+    Pencil,
+    Ellipsis
 } from "lucide-react";
 
 // ui
@@ -21,19 +24,77 @@ import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { useNextMessageStore } from "@/package/store/useNextMessageStore";
 
 import { Button } from '@/components/ui/button';
-
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useUserStore, useViewStore } from '@/store/store';
+import { Textarea } from "@/components/ui/textarea";
 
+import { scrollFullDown } from '@/package/utils/viewport-utils';
+import { addMessage, fetchMessagesByDomainAndThread } from '@/actions/messaging';
+import { countCharacters } from '@/package/utils/utils';
 
-import { useAddMessage, useMessagesRealtime } from '@/package/lib/supabase/RealtimeClient';
-import handleSendClick from '@/package/interfaces/handleSendClick';
 
 export const MessageActionsBar = ({
     sendingDisabled,
+    domain,
+    textContent,
+    referencedMessageId,
+    thread_id
 }: {
     sendingDisabled: boolean,
+    domain: string,
+    textContent: string,
+    referencedMessageId: string | null,
+    thread_id: string
 }) => {
     const { toast } = useToast();
+    const { user } = useUserStore();
+
+    // this would be the form submission
+    const handleSendClick = async (e: any) => {
+        e.preventDefault();
+        if (!textContent.trim()) { return; }
+
+        const newMessageObject = {
+            content: textContent,
+            user_id: user?.id,
+            organization: user?.organization,
+            referenced_message_id: referencedMessageId || null,
+            is_reference: !!referencedMessageId,
+            character_count: countCharacters(textContent),
+            mentions: [], // awaiting implementation
+            attachments: [], // awaiting implementation
+            reactions: [], // awaiting implementation
+            thread_id: thread_id,
+            domain: domain,
+            profile_picture: user?.profile_picture,
+            username: user?.username,
+            email: user?.email,
+            verified: false
+        };
+
+        try {
+            const response = await addMessage({ message: newMessageObject });
+            if (response.success) {
+                scrollFullDown();
+                setTextContent('');
+                setMessages((prevMessages) => [...prevMessages, newMessageObject]);
+
+
+                // await fetchMessages();
+
+            } else {
+                throw new Error(response.error.message);
+            }
+        } catch (error: any) {
+            toast({
+                description: `Failed to send message: ${error.message}`,
+                variant: 'destructive',
+                duration: 2500
+            });
+        }
+    }
+
 
     const handleAtClick = async () => {
         toast({
@@ -70,6 +131,10 @@ export const MessageActionsBar = ({
     const classessDisabledCursor = sendingDisabled ? 'cursor-not-allowed pointer-events-none' : 'cursor-pointer';
     const bgDisabledSendButton = sendingDisabled ? 'bg-hover-foreground' : '';
     const colorIcon = sendingDisabled ? '#acacad' : '#d9d9de';
+
+
+    const placeholderThreadReply = 'Reply to thread...';
+
 
 
 
@@ -131,6 +196,7 @@ export const MessageActionsBar = ({
                         <TooltipTrigger className={classessDisabledCursor}>
                             <Button
                                 variant={'brand'}
+                                onClick={handleSendClick}
                                 size={'icon_small'}
                                 className={`rounded-md   ${bgDisabledSendButton}`}
                                 type={'button'}

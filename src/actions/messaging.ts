@@ -1,7 +1,6 @@
 'use server';
 
-import { createXylexClient, createClient } from '@/lib/supabase/client';
-
+import { createXylexClient } from '@/lib/supabase/client';
 
 export interface MessageEntry {
     content: string;
@@ -22,7 +21,7 @@ export interface MessageEntry {
 }
 
 export async function addMessage({ message }: { message: MessageEntry }) {
-    const xylexClient = createClient();
+    const xylexClient = createXylexClient();
 
     const messageData = {
         ...message,
@@ -46,19 +45,26 @@ export async function addMessage({ message }: { message: MessageEntry }) {
 export async function fetchMessagesByDomainAndThread(
     domain: string,
     thread_id: string,
+    time_cursor?: number
 ): Promise<{
     success: boolean;
     error?: any;
     data: any[] | null
 }> {
-    const xylexClient = createClient();
+    const xylexClient = createXylexClient();
 
+    if (!time_cursor) { 
+        return { success: false, error: 'time_cursor is required', data: null };
+    }
 
     const { data, error } = await xylexClient
         .from('messages')
         .select('*')
+        .gte('time', time_cursor)
         .eq('domain', domain)
         .eq('thread_id', thread_id);
+    console.log('data', data);
+    console.log('time', time_cursor);
 
     if (error) {
         console.error('Error fetching messages:', error);
