@@ -24,6 +24,8 @@ export default function NextMessageProvider({
     const isFirstRender = useIsFirstRender();
 
     console.log('isFirstRenderNextMessageProvider', isFirstRender);
+    const parentRef = React.useRef(null);
+
 
 
     return (
@@ -36,6 +38,8 @@ export default function NextMessageProvider({
                     width: '600px',
                     height: '400px'
                 }}
+                parentRef={parentRef}
+                isFirstRender={isFirstRender}
 
 
             />
