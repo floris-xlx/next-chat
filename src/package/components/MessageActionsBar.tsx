@@ -27,11 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useUserStore, useViewStore } from '@/store/store';
-import { Textarea } from "@/components/ui/textarea";
 
-import { scrollFullDown } from '@/package/utils/viewport-utils';
-import { addMessage, fetchMessagesByDomainAndThread } from '@/actions/messaging';
-import { countCharacters } from '@/package/utils/utils';
 import handleSendClick from '@/package/interfaces/handleSendClick';
 
 export const MessageActionsBar = ({

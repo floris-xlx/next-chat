@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, memo, useMemo, Fragment } from 'react';
+import React, { useState, useEffect, useRef, Fragment } from 'react';
 
 import { addMessage, fetchMessagesByDomainAndThread } from '@/actions/messaging';
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +16,9 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 
 // re-xports
 import MessageProfilePicture from '@/package/components/MessageProfilePicture';
+import useResizeObservers from '@/package/hooks/use-resize-observers';
+
+
 
 export type MessageBoxProps = {
     thread_id: string;
@@ -48,7 +51,7 @@ const MessageBox = ({
 }: MessageBoxProps) => {
     const { toast } = useToast();
     const { user } = useUserStore();
-
+    const resizeObservers = useRef([]);
     const [textContent, setTextContent] = useState('');
     const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
     const [messages, setMessages] = useState<any[]>([]);
@@ -102,7 +105,7 @@ const MessageBox = ({
         );
     };
 
-    const resizeObservers = useRef([]);
+
 
     // virtualization controller
     const rowVirtualizer = useVirtualizer({
@@ -113,33 +116,8 @@ const MessageBox = ({
         paddingEnd: 50,
     });
 
-    // this handles the irregular height of the messages
-    useEffect(() => {
-        const virtualItems = rowVirtualizer.getVirtualItems();
-
-        // Clean up old ResizeObservers
-        resizeObservers.current.forEach((observer) => observer.disconnect());
-        resizeObservers.current = [];
-
-        virtualItems.forEach((virtualItem) => {
-            const element = document.querySelector(`[data-index="${virtualItem.index}"]`);
-
-            if (element) {
-                const resizeObserver = new window.ResizeObserver(() => {
-                    const newSize = element.getBoundingClientRect().height;
-                    rowVirtualizer.resizeItem(virtualItem.index, newSize);
-                });
-                resizeObserver.observe(element);
-                resizeObservers.current.push(resizeObserver);
-            }
-        });
-
-        return () => {
-            resizeObservers.current.forEach((observer) => observer.disconnect());
-            resizeObservers.current = [];
-        };
-    }, [rowVirtualizer.getVirtualItems()]);
-
+    const result = useResizeObservers(rowVirtualizer);
+    console.log('result', result);
 
 
     return (
