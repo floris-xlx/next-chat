@@ -51,7 +51,6 @@ const MessageBox = ({
     isFirstRender = false
 }: MessageBoxProps) => {
     const { toast } = useToast();
-
     const { user } = useUserStore();
 
     const [textContent, setTextContent] = useState('');
@@ -65,7 +64,7 @@ const MessageBox = ({
         isTextAreaFocused: isTextAreaFocused
     });
 
-
+    // this makes sure msgs are sorted by time
     const sortedMessages = [...messages].sort((a, b) => a.time - b.time);
 
     const rowVirtualizer = useVirtualizer({
@@ -73,10 +72,8 @@ const MessageBox = ({
         getScrollElement: () => parentRef.current,
         estimateSize: () => 61,
         overscan: 5,
+        paddingEnd: 100
     });
-
-
-
 
 
     useEffect(() => {
@@ -85,9 +82,6 @@ const MessageBox = ({
             if (response?.data) {
                 setMessages(response.data);
             }
-
-
-
         };
 
         fetchMessages();
@@ -95,17 +89,6 @@ const MessageBox = ({
 
         return () => clearInterval(interval);
     }, [domain, thread_id, update_interval_in_ms]);
-
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (parentRef.current && isFirstRender) {
-                parentRef.current.scrollTo({ top: parentRef.current.scrollHeight, behavior: 'smooth' });
-            }
-        }, 250);
-
-        return () => clearTimeout(timer);
-    }, [messages]);
 
 
 
@@ -130,8 +113,10 @@ const MessageBox = ({
         ), [profile_picture, avatar_fallback]);
 
         return (
-            <div className='flex flex-row justify-between w-full group' id={id} style={{ position: 'absolute', top: '11px', left: '16px', width: '97%', height: `${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.size}px`, 
-            transform: `translateY(${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.start}px)` }}>
+            <div className='flex flex-row justify-between w-full group' id={id} style={{
+                position: 'absolute', top: '11px', left: '16px', width: '97%', height: `${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.size}px`,
+                transform: `translateY(${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.start}px)`
+            }}>
                 <div className='flex flex-row max-w-full gap-x-2'>
                     {renderAvatar}
                     <div className='pl-2'>
@@ -184,22 +169,48 @@ const MessageBox = ({
     };
 
     return (
-        <div id='next-chat-message-box' style={{ width: style.width, height: style.height }}>
-            <div ref={parentRef} className='border border-b-0 rounded-t-md bg-secondary' style={{ height: '400px', width: '100%', overflow: 'auto' }}>
-                <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}>
+        <div
+            id='next-chat-message-box'
+            style={{
+                width: style.width,
+                height: style.height
+            }}>
+            <div
+                ref={parentRef}
+                className='border border-b-0 rounded-t-md bg-secondary'
+                style={{
+                    height: '400px',
+                    width: '100%',
+                    overflow: 'auto'
+                }}>
+                <div
+                    style={{
+                        height: `${rowVirtualizer.getTotalSize()}px`,
+                        width: '100%',
+                        position: 'relative',
+
+                    }}>
                     {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-                        <Message id={virtualRow.index} key={virtualRow.index} message={sortedMessages[virtualRow.index]} />
+                        <Message
+                            id={virtualRow.index}
+                            key={virtualRow.index}
+                            message={sortedMessages[virtualRow.index]}
+                        />
                     ))}
                 </div>
             </div>
-            <form dir="ltr" className='w-full border rounded-b-md bg-secondary' onClick={handleSendClickWrapper}>
+            <form
+                dir="ltr"
+                className='w-full border rounded-b-md bg-secondary'
+                onClick={handleSendClickWrapper}
+            >
                 <div>
                     <Textarea
                         placeholder={placeholderMessage}
                         className="bg-transparent w-full border-none ring-0 resize-none p-4 xlx-message-box transform transition-transform duration-150 ease-in-out text-[16px]"
                         value={textContent}
                         onChange={(e) => setTextContent(e.target.value)}
-                        style={{ resize: 'none', minHeight: '64px' }}
+                        style={{ resize: 'none', minHeight: '44px' }}
                         onFocus={() => setIsTextAreaFocused(true)}
                         onBlur={() => setIsTextAreaFocused(false)}
                         onKeyDown={(e) => {
