@@ -1,29 +1,21 @@
 'use client';
 
-
-import React, { Fragment, useState, useEffect, useRef } from 'react';
-// actions
+import React, { useState, useEffect, useRef, memo, useMemo } from 'react';
+import useSWR from 'swr';
 import { addMessage, fetchMessagesByDomainAndThread } from '@/actions/messaging';
-//hooks
 import { useToast } from '@/hooks/use-toast';
 import { useCanSendMsg } from '@/package/hooks/use-can-send-msg';
-import { useIsFirstRender } from "@uidotdev/usehooks";
-// interfaces
-import handleSendClick from '@/package/interfaces/handleSendClick';
-import MessageActionsBar from '@/package/components/MessageActionsBar';
-// utils
 import { countCharacters } from '@/package/utils/utils';
 import { calculateRelativeTimestamp } from '@/utils/date-utils';
-import { restoreScrollPosition, scrollFullDown } from '@/package/utils/viewport-utils';
-// ui
-import { Reply } from "lucide-react";
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-// store
+import { Textarea } from '@/components/ui/textarea';
+import { Reply } from "lucide-react";
 import { useUserStore } from '@/store/store';
 import { useNextMessageStore } from "./store/useNextMessageStore";
-
+import MessageActionsBar from '@/package/components/MessageActionsBar';
+import handleSendClick from '@/package/interfaces/handleSendClick';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 export type MessageBoxProps = {
     thread_id: string;
@@ -32,7 +24,6 @@ export type MessageBoxProps = {
     allowSelectName?: boolean;
     allowSelectMessage?: boolean;
     placeholderMessage?: string;
-    avatar?: React.ReactNode;
     update_interval_in_ms?: number;
 };
 
@@ -41,6 +32,10 @@ export type MessageBoxStylingProps = {
     height: string;
 };
 
+const fetcher = async (domain: string, thread_id: string) => {
+    const response = await fetchMessagesByDomainAndThread(domain, thread_id, true);
+    return response?.data;
+};
 
 const MessageBox = ({
     thread_id,
@@ -49,358 +44,143 @@ const MessageBox = ({
     allowSelectName = false,
     allowSelectMessage = false,
     placeholderMessage = 'Write a message...',
-    avatar,
-    update_interval_in_ms = 1000
+    update_interval_in_ms = 5000
 }: MessageBoxProps) => {
-    // zustand
     const { toast } = useToast();
-    const { nextMessage, setHasMounted } = useNextMessageStore();
+
     const { user } = useUserStore();
 
-    // usestate
     const [textContent, setTextContent] = useState('');
-    const [messages, setMessages] = useState<string[]>([]);
     const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
+    const [messages, setMessages] = useState<any[]>([]);
+    const chatContainerRef = useRef<HTMLDivElement>(null);
 
-    const [referencedMessageId, setReferencedMessageId] = useState('');
-
-    const [messageCountOld, setMessageCountOld] = useState(0);
-    const [messageCountNew, setMessageCountNew] = useState(0);
-
-    console.log('messageCountOld', messageCountOld);
-    console.log('messageCountNew', messageCountNew);
-
-    // responsible for disabling the send button
     const { sendingDisabled } = useCanSendMsg({
         textContent: textContent,
         isTextAreaFocused: isTextAreaFocused
     });
 
-    console.log('old messages', messages);
-    
-    const [initialFetched, setInitialFetched] = useState(false);
-
-
-    const fetchMessages = async () => {
-        let response;
-
-        if (messages.length === 0 && !initialFetched) {
-            response = await fetchMessagesByDomainAndThread(domain, thread_id, true);
-            setInitialFetched(true);
-
-            // Set old message count before updating messages
-            setMessageCountOld(response?.data?.length);
-
-        } else {
-            response = await fetchMessagesByDomainAndThread(domain, thread_id, false);
-
-
-        }
-
-        if (response?.data?.length > 0) {
-            console.log('response with fetch', response);
-            console.log('new messages', response?.data);
-
-
-
-            // Update messages
-            setMessages(response?.data);
-
-            // Once messages are updated, use the new length to set the new count
-            setMessageCountNew(response?.data.length);
-
-            // Log the counts for comparison
-            console.log('Updated messageCountOld:', messages.length);
-            console.log('Updated messageCountNew:', response?.data.length);
-        }
-    };
 
 
     useEffect(() => {
-        if (!thread_id || !domain) { return; }
+        const fetchMessages = async () => {
+            const response = await fetchMessagesByDomainAndThread(domain, thread_id, messages.length === 0);
+            if (response?.data) {
+                setMessages(response.data);
+            }
+        };
+
         fetchMessages();
-    }, [thread_id, domain]);
-
-
-
-    // this is for the message update interval
-    useEffect(() => {
-        const interval = setInterval(() => {
-            fetchMessages();
-        }, update_interval_in_ms);
+        const interval = setInterval(fetchMessages, update_interval_in_ms);
 
         return () => clearInterval(interval);
-    }, [update_interval_in_ms]);
+    }, [domain, thread_id, update_interval_in_ms]);
 
+    const parentRef = useRef(null);
+    const rowVirtualizer = useVirtualizer({
+        count: messages.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 62,
+        overscan: 5,
+    });
 
-
-
-    const [textAreaHeight, setTextAreaHeight] = useState(32 + 32);
-
-    // this is for the textarea height adjustment
-    useEffect(() => {
-        const characters = countCharacters(textContent);
-        if (characters >= 20) {
-            const newHeight = Math.min(160, 64 + Math.ceil((characters / 4) / 16) * 12);
-            setTextAreaHeight(newHeight);
-        }
-    }, [textContent]);
-
-    const Message = React.memo(({
-        message,
-        id = 'message-id'
-    }: {
-        message: any,
-        id?: string
-    }) => {
-        // this is the character bound limit to force wrap text
-
-        const content = message?.content;
-        const name = message?.username || message?.email;
-        const avatar_fallback = message?.email?.charAt(0).toUpperCase();
-        const time = calculateRelativeTimestamp(message?.time, true);
-
-        const renderAvatar: React.JSX.Element = React.useMemo(() => {
-            if (message?.profile_picture) {
-                // using normal <img> as the next one keeps re-rendering?!
-                return (
-                    <img
-                        src={message.profile_picture}
-                        height={28}
-                        width={28}
-                        alt="Profile Picture"
-                        className='rounded-md select-none mr-2'
-                        style={{
-                            borderRadius: '6px',
-                            height: '28px',
-                            width: '28px',
-                            marginTop: '5px',
-                        }}
-                    />
-                );
-            } else {
-                return (
-                    <Avatar className='rounded-md'>
-                        <AvatarFallback>
-                            {avatar_fallback}
-                        </AvatarFallback>
-                    </Avatar>
-                );
-            }
-        }, [message?.profile_picture, avatar_fallback]);
-
+    const Message = memo(({ message, id }: { message: any, id: any }) => {
+        const { content, username, email, profile_picture, time } = message;
+        const avatar_fallback = email?.charAt(0).toUpperCase();
+        const renderAvatar = useMemo(() => (
+            profile_picture ? (
+                <img
+                    src={profile_picture}
+                    height={28}
+                    width={28}
+                    alt="Profile Picture"
+                    className='rounded-md select-none mr-2'
+                    style={{ borderRadius: '6px', height: '28px', width: '28px', marginTop: '5px' }}
+                />
+            ) : (
+                <Avatar className='rounded-md'>
+                    <AvatarFallback>{avatar_fallback}</AvatarFallback>
+                </Avatar>
+            )
+        ), [profile_picture, avatar_fallback]);
 
         return (
-            <div id={id} className='flex flex-row justify-between  w-full group'>
-                <div className='flex flex-row max-w-full gap-x-2' >
+            <div className='flex flex-row justify-between w-full group' id={id} style={{ position: 'absolute', top: 0, left: '14px', width: '95%', overflowX: 'hidden', height: `${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.size}px`, transform: `translateY(${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.start}px)` }}>
+                <div className='flex flex-row max-w-full gap-x-2 '>
                     {renderAvatar}
                     <div className='pl-2'>
                         <div className='flex flex-row text-center items-center gap-x-1'>
-                            <p className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`} >
-                                {name}
-                            </p>
-                            <p className={`text-[13px] font-[300] opacity-50  ${!allowSelectName ? 'select-none' : ''}`} >
-                                {time}
-                            </p>
+                            <p className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`}>{username || email}</p>
+                            <p className={`text-[13px] font-[300] opacity-50 ${!allowSelectName ? 'select-none' : ''}`}>{calculateRelativeTimestamp(time, true)}</p>
                         </div>
                         <p className='text-[14px] font-[400] text-accent opacity-70 text-wrap'>
                             <span
                                 style={{ wordBreak: 'break-word', overflowWrap: 'break-word', overflowX: 'hidden' }}
-                                className={` ${!allowSelectMessage ? 'select-none' : ''}`}
+                                className={`${!allowSelectMessage ? 'select-none' : ''}`}
                                 dangerouslySetInnerHTML={{ __html: content?.replace(/\n/g, "<br />") }}
                             />
                         </p>
                     </div>
                 </div>
-
                 <div className='flex flex-row items-center opacity-0 group-hover:opacity-100 transition-opacity'>
-                    <Button variant={'icon_hover'} className='hover:bg-hover bg-transparent transition rounded-md border-0 p-2 '>
+                    <Button variant={'icon_hover'} className='hover:bg-hover bg-transparent transition rounded-md border-0 p-2'>
                         <Reply size={18} className='text-secondary-foreground opacity-80' />
                     </Button>
                 </div>
             </div>
         )
     });
-
     Message.displayName = 'Message';
 
-    const chatContainerRef = useRef<HTMLDivElement>(null);
-
-
-
-
-    // Handle focus/blur events
-    const handleTextAreaFocus = () => {
-        setIsTextAreaFocused(true);
-    };
-
-    const handleTextAreaBlur = () => {
-        setIsTextAreaFocused(false);
-    };
-
-    const ScrollContainer: React.FC<{
-        children: React.ReactNode
-    }> = ({
-        children
-    }) => {
-            const outerDiv = useRef(null);
-            const innerDiv = useRef(null);
-
-            const prevInnerDivHeight = useRef(null);
-            const [autoScroll, setAutoScroll] = useState(true);
-
-            useEffect(() => {
-                const outerDivHeight = outerDiv.current.clientHeight;
-                const innerDivHeight = innerDiv.current.clientHeight;
-                const outerDivScrollTop = outerDiv.current.scrollTop;
-
-                // Check if user is already at or near bottom
-                if (autoScroll || outerDivScrollTop >= prevInnerDivHeight.current - outerDivHeight - 20) {
-                    outerDiv.current.scrollTo({
-                        top: innerDivHeight! - outerDivHeight!,
-                        left: 0,
-                        behavior: prevInnerDivHeight.current ? "smooth" : "auto"
-                    });
-                    setAutoScroll(true);
-                }
-
-                prevInnerDivHeight.current = innerDivHeight;
-            }, [children, autoScroll]);
-
-            const handleUserScroll = () => {
-                const outerDivHeight = outerDiv.current.clientHeight;
-                const innerDivHeight = innerDiv.current.clientHeight;
-                const outerDivScrollTop = outerDiv.current.scrollTop;
-
-                // If user scrolls up, disable auto scroll
-                if (outerDivScrollTop < innerDivHeight - outerDivHeight - 20) {
-                    setAutoScroll(false);
-                } else {
-                    setAutoScroll(true);
-                }
-            };
-
-            return (
-                <div
-                    style={{
-                        position: "relative",
-                        height: "100%"
-                    }}
-                >
-                    <div
-                        ref={outerDiv}
-                        style={{
-                            position: "relative",
-                            height: "100%",
-                            overflowY: "scroll"
-                        }}
-                        onScroll={handleUserScroll}
-                    >
-                        <div
-                            ref={innerDiv}
-                            style={{
-                                position: "relative"
-                            }}
-                        >
-                            {children}
-                        </div>
-                    </div>
-                </div>
-            )
-        };
-
-
-    // Handle click wrapper
-    const HandleClickWrapper = async (e: any) => {
+    const handleSendClickWrapper = async (e: any) => {
         e.preventDefault();
-        console.log('clicked HandleClickWrapper', e);
         await handleSendClick(
             e,
             textContent,
             user,
-            referencedMessageId,
+            '', // referencedMessageId placeholder
             countCharacters,
             thread_id,
             domain,
             setTextContent,
-            setMessages,
+            () => console.log(';'), // Clear messages temporarily after sending
             toast,
             chatContainerRef
         );
     };
 
-    const MessageContainer: React.FC<{ messages?: any[] }> = ({ messages = [] }) => {
-        return (
-            <div style={{ height: '400px' }} className='border border-b-0 rounded-t-md bg-secondary'>
-                <ScrollContainer>
-                    <div className=" flex flex-col gap-y-4 p-3">
-                        {messages.map((message, index) => (
-                            <div key={index} style={{ overflowWrap: 'break-word' }}>
-                                <Message
-                                    key={index}
-                                    id={message?.message_id}
-                                    message={message}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </ScrollContainer>
-            </div>
-        );
-    };
-
-
     return (
-        <div id='next-chat-message-box'
-            style={{
-                width: style.width,
-                height: style.height
-            }}
-        >
-            <MessageContainer messages={messages} />
-
-            <form
-                dir="ltr"
-                className='w-full  border rounded-b-md bg-secondary'
-                onClick={HandleClickWrapper}
-            >
+        <div id='next-chat-message-box' style={{ width: style.width, height: style.height }} >
+            <div ref={parentRef} className='border border-b-0 rounded-t-md bg-secondary' style={{ height: '400px', width: '100%', overflow: 'auto' }}>
+                <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}>
+                    {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+                        <Message id={virtualRow.index} key={virtualRow.index} message={messages[virtualRow.index]} />
+                    ))}
+                </div>
+            </div>
+            <form dir="ltr" className='w-full border rounded-b-md bg-secondary' onClick={handleSendClickWrapper}>
                 <div>
                     <Textarea
                         placeholder={placeholderMessage}
                         className="bg-transparent w-full border-none ring-0 resize-none p-4 xlx-message-box transform transition-transform duration-150 ease-in-out text-[16px]"
                         value={textContent}
                         onChange={(e) => setTextContent(e.target.value)}
-                        style={{
-                            resize: 'none',
-                            height: textAreaHeight + 'px',
-                            minHeight: textAreaHeight + 'px',
-                        }}
-                        onFocus={handleTextAreaFocus}
-                        onBlur={() => handleTextAreaBlur()}
+                        style={{ resize: 'none', minHeight: '64px' }}
+                        onFocus={() => setIsTextAreaFocused(true)}
+                        onBlur={() => setIsTextAreaFocused(false)}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
-                                HandleClickWrapper(e);
+                                handleSendClickWrapper(e);
                                 e.preventDefault();
                             }
                         }}
                     />
                 </div>
-
-                <MessageActionsBar
-                    sendingDisabled={sendingDisabled}
-                    domain={domain}
-                    textContent={textContent}
-                    referencedMessageId={referencedMessageId}
-                    thread_id={thread_id}
-                />
-
-            </form >
-        </div >
+                <MessageActionsBar sendingDisabled={sendingDisabled} />
+            </form>
+        </div>
     )
-}
+};
 
-
-// display name for message
 MessageBox.displayName = 'MessageBox';
-
 export { MessageBox };
