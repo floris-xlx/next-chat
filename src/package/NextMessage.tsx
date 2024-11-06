@@ -173,7 +173,8 @@ const MessageBox = ({
             id='next-chat-message-box'
             style={{
                 width: style.width,
-                height: style.height
+                height: style.height,
+              
             }}>
             <div
                 ref={parentRef}
@@ -181,7 +182,8 @@ const MessageBox = ({
                 style={{
                     height: '400px',
                     width: '100%',
-                    overflow: 'auto'
+                    overflow: 'auto',
+                    overflowX: 'hidden',	
                 }}>
                 <div
                     style={{
@@ -210,7 +212,7 @@ const MessageBox = ({
                         className="bg-transparent w-full border-none ring-0 resize-none p-4 xlx-message-box transform transition-transform duration-150 ease-in-out text-[16px]"
                         value={textContent}
                         onChange={(e) => setTextContent(e.target.value)}
-                        style={{ resize: 'none', minHeight: '44px' }}
+                        style={{ resize: 'none', minHeight: '44px', maxHeight: '58px' }}
                         onFocus={() => setIsTextAreaFocused(true)}
                         onBlur={() => setIsTextAreaFocused(false)}
                         onKeyDown={(e) => {

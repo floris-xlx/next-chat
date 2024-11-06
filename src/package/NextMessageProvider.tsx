@@ -35,7 +35,7 @@ export default function NextMessageProvider({
                 thread_id={thread_id}
                 domain={domain}
                 style={{
-                    width: '600px',
+                    width: '390px',
                     height: '400px'
                 }}
                 parentRef={parentRef}
