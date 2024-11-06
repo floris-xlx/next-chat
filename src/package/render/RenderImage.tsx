@@ -10,6 +10,15 @@ export function renderImage(
 
     console.log('urls', urls);
 
+    const contentStyles = {
+        maxWidth: '120px',
+        maxHeight: '120px',
+        objectFit: 'contain',
+        paddingTop: '10px',
+        borderRadius: '6px',
+    };
+    const objectFitTypes = ['fill', 'contain', 'cover', 'none', 'scale-down'];
+
     return urls.map((item, index) => {
         if (item && item.type === 'image') {
             return (
@@ -19,11 +28,11 @@ export function renderImage(
                         alt='image'
                         className='rounded-md'
                         style={{
-                            maxWidth: '120px',
-                            maxHeight: '120px',
-                            objectFit: 'contain',
-                            paddingTop: '10px',
-                            borderRadius: '6px',
+                            maxWidth: contentStyles.maxWidth,
+                            maxHeight: contentStyles.maxHeight,
+                            objectFit: contentStyles.objectFit as 'fill' | 'contain' | 'cover' | 'none' | 'scale-down',
+                            paddingTop: contentStyles.paddingTop,
+                            borderRadius: contentStyles.borderRadius,
                         }}
                     />
                 </div>
@@ -37,11 +46,11 @@ export function renderImage(
                         muted
                         className='rounded-md'
                         style={{
-                            maxWidth: '120px',
-                            maxHeight: '120px',
-                            objectFit: 'contain',
-                            paddingTop: '10px',
-                            borderRadius: '6px',
+                            maxWidth: contentStyles.maxWidth,
+                            maxHeight: contentStyles.maxHeight,
+                            objectFit: contentStyles.objectFit as 'fill' | 'contain' | 'cover' | 'none' | 'scale-down',
+                            paddingTop: contentStyles.paddingTop,
+                            borderRadius: contentStyles.borderRadius,
                         }}
                     />
                 </div>

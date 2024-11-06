@@ -28,7 +28,7 @@ export function isPdfUrl(url: string): boolean {
 
 export function identifyUrlType(url: string): { url: string, type: string, safe: string } {
     let type = 'unknown';
-    let safe = 'unknown';
+    const safe = 'unknown';
 
     if (isImageUrl(url)) type = 'image';
     else if (isVideoUrl(url)) type = 'video';
