@@ -16,6 +16,9 @@ import { useUserStore } from '@/store/store';
 import MessageActionsBar from '@/package/components/MessageActionsBar';
 import handleSendClick from '@/package/interfaces/handleSendClick';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { useIsFirstRender } from '@uidotdev/usehooks';
+
+
 
 export type MessageBoxProps = {
     thread_id: string;
@@ -25,6 +28,7 @@ export type MessageBoxProps = {
     allowSelectMessage?: boolean;
     placeholderMessage?: string;
     update_interval_in_ms?: number;
+
 };
 
 export type MessageBoxStylingProps = {
@@ -40,7 +44,8 @@ const MessageBox = ({
     allowSelectName = false,
     allowSelectMessage = false,
     placeholderMessage = 'Write a message...',
-    update_interval_in_ms = 5000
+    update_interval_in_ms = 5000,
+
 }: MessageBoxProps) => {
     const { toast } = useToast();
 
@@ -49,6 +54,10 @@ const MessageBox = ({
     const [textContent, setTextContent] = useState('');
     const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
     const [messages, setMessages] = useState<any[]>([]);
+
+    const isFirstRender = useIsFirstRender();
+
+    console.log('isFirstRender', isFirstRender);
 
     const { sendingDisabled } = useCanSendMsg({
         textContent: textContent,
@@ -59,9 +68,10 @@ const MessageBox = ({
     const rowVirtualizer = useVirtualizer({
         count: messages.length,
         getScrollElement: () => parentRef.current,
-        estimateSize: () => 72,
+        estimateSize: () => 61,
         overscan: 5,
     });
+
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -76,7 +86,6 @@ const MessageBox = ({
 
         return () => clearInterval(interval);
     }, [domain, thread_id, update_interval_in_ms]);
-
 
 
 
@@ -102,7 +111,7 @@ const MessageBox = ({
         ), [profile_picture, avatar_fallback]);
 
         return (
-            <div className='flex flex-row justify-between w-full group' id={id} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: `${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.size}px`, transform: `translateY(${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.start}px)` }}>
+            <div className='flex flex-row justify-between w-full group' id={id} style={{ position: 'absolute', top: '11px', left: '16px', width: '97%', height: `${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.size}px`, transform: `translateY(${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.start}px)` }}>
                 <div className='flex flex-row max-w-full gap-x-2'>
                     {renderAvatar}
                     <div className='pl-2'>

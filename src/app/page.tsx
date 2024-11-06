@@ -10,7 +10,7 @@ import {
   MessageBoxProps,
   MessageBoxStylingProps
 } from '@/package/NextMessage'
-
+import NextMessageProvider from '@/package/NextMessageProvider'
 import { Input } from '@/components/ui/input'
 
 import { useUserStore } from '@/store/useUserStore'
@@ -44,13 +44,9 @@ export default function Home() {
   return (
     <Fragment>
       <div className='p-4 flex flex-row justify-center w-full translate-y-[10%] sm:translate-y-[50%] '>
-        <MessageBox
+        <NextMessageProvider
           thread_id={thread_id}
           domain={domain}
-          style={{
-            width: '600px',
-            height: '400px'
-          }}
         />
 
       </div>

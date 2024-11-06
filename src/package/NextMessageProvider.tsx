@@ -14,22 +14,31 @@ import {
 import { Input } from '@/components/ui/input'
 
 import { useUserStore } from '@/store/useUserStore'
+import { useIsFirstRender } from '@uidotdev/usehooks';
 
-export default function NextMessageProvider(children: ReactNode) {
+export default function NextMessageProvider({
+    thread_id,
+    domain
+}: { thread_id: string; domain: string }) {
 
+    const isFirstRender = useIsFirstRender();
 
-    const thread_id = 'demo'
-    const domain = 'next-chat'
+    console.log('isFirstRenderNextMessageProvider', isFirstRender);
 
-    const [scrollPos, setScrollPos] = useState(0);
 
     return (
         <div>
 
-            {children}
+            <MessageBox
+                thread_id={thread_id}
+                domain={domain}
+                style={{
+                    width: '600px',
+                    height: '400px'
+                }}
 
 
-
+            />
 
         </div>
     );
