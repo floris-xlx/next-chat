@@ -27,8 +27,7 @@ const handleSendClick = async (
     const urls = extractUrls(textContent);
     const urlTypes = urls.map((url: string) => identifyUrlType(url));
     const cleanText = removeUrls(textContent);
-    console.log('cleanText', cleanText);
-    console.log('textContent', textContent);
+
 
     const newMessageObject = {
         content: cleanText,

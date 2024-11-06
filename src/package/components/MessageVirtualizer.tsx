@@ -40,6 +40,8 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
     useResizeObservers(rowVirtualizer);
 
 
+
+
     return (
         <div
             ref={parentRef}
@@ -63,6 +65,7 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
             >
                 {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                     const item = sortedMessages[virtualRow.index];
+                    console.log('item', item);
 
                     return (
                         <div
@@ -104,8 +107,12 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                             {/* this renders the actual text, it had to be done like this otherwise it would produce weird artifacts */}
                             <div
                                 className='px-6 text-[14px] font-[400]'
-                                style={{ transform: 'translateY(-7px)', paddingLeft: '37px' }}>
+                                style={{ transform: 'translateY(-7px)', paddingLeft: '37px' }}
+                            >
+
                                 {item.content}
+
+                                {renderImage(item.urls)}
 
 
                             </div>
