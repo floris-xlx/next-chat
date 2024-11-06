@@ -15,8 +15,8 @@ export function renderImage(
     console.log('urls', urls);
 
     const contentStyles = {
-        maxWidth: '120px',
-        maxHeight: '120px',
+        maxWidth: '250px',
+        maxHeight: '200px',
         objectFit: 'contain',
         paddingTop: '10px',
         borderRadius: '6px',
