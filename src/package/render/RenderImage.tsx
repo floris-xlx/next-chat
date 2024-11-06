@@ -76,7 +76,7 @@ export function renderImage(
         } else if (item && item.type === 'tradingview') {
             const urlImage = tradingviewUrlImage[index];
             return (
-                <div key={index} className='flex'>
+                <div key={index} className='flex rounded-md'>
                     <img
                         src={urlImage}
                         title={'tradingview-chart-image'}

@@ -106,7 +106,7 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
 
                             {/* this renders the actual text, it had to be done like this otherwise it would produce weird artifacts */}
                             <div
-                                className='px-6 text-[14px] font-[400]'
+                                className='px-6 text-[14px] font-[400] '
                                 style={{ transform: 'translateY(-7px)', paddingLeft: '37px' }}
                             >
 
