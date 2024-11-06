@@ -52,7 +52,7 @@ export default function Home() {
       </div>
 
 
-      <div className='max-w-[250px] px-8 gap-4 flex flex-col translate-y-[75%] sm:translate-y-2'>
+      {/* <div className='max-w-[250px] px-8 gap-4 flex flex-col translate-y-[75%] sm:translate-y-2'>
         <Input
           id={'set-username-demo-input'}
           value={username}
@@ -106,7 +106,7 @@ export default function Home() {
           placeholder={'Enter your update interval in ms'}
           className='bg-background-foreground text-[16px]'
         />
-      </div>
+      </div> */}
     </Fragment>
   );
 }
