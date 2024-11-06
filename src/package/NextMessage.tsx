@@ -113,8 +113,8 @@ const MessageBox = ({
         ), [profile_picture, avatar_fallback]);
 
         return (
-            <div className='flex flex-row justify-between w-full group' id={id} style={{
-                position: 'absolute', top: '11px', left: '16px', width: '97%', height: `${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.size}px`,
+            <div className='flex flex-row justify-between w-full group ' id={id} style={{
+                position: 'absolute', top: '11px', left: '16px', width: '92%', height: `${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.size}px`,
                 transform: `translateY(${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.start}px)`
             }}>
                 <div className='flex flex-row max-w-full gap-x-2'>
@@ -133,8 +133,8 @@ const MessageBox = ({
                         </p>
                     </div>
                 </div>
-                <div className='flex flex-row items-center opacity-0 group-hover:opacity-100 transition-opacity'>
-                    <Button variant={'icon_hover'} className='hover:bg-hover bg-transparent transition rounded-md border-0 p-2'>
+                <div className=' px-2 flex flex-row  opacity-0 group-hover:opacity-100 transition-opacity'>
+                    <Button variant={'icon_hover'} className='hover:bg-hover bg-transparent transition rounded-md border-0 p-0'>
                         <Reply size={18} className='text-secondary-foreground opacity-80' />
                     </Button>
                 </div>
@@ -174,7 +174,7 @@ const MessageBox = ({
             style={{
                 width: style.width,
                 height: style.height,
-              
+
             }}>
             <div
                 ref={parentRef}
@@ -183,7 +183,7 @@ const MessageBox = ({
                     height: '400px',
                     width: '100%',
                     overflow: 'auto',
-                    overflowX: 'hidden',	
+                    overflowX: 'hidden',
                 }}>
                 <div
                     style={{
