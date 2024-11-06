@@ -7,36 +7,43 @@ import React from 'react';
 
 import { addMessage } from '@/actions/messaging';
 import { scrollFullDown } from '@/package/utils/viewport-utils';
+import { countCharacters, extractUrls, identifyUrlType } from '@/package/utils/utils';
+import { removeUrls } from '@/package/utils/clean-utils';
 
 const handleSendClick = async (
     e: any,
     textContent?: string,
     user?: any,
     referencedMessageId?: string,
-    countCharacters?: (text: string) => number,
     thread_id?: string,
     domain?: string,
     setTextContent?: React.Dispatch<React.SetStateAction<string>>,
-    setMessages?: React.Dispatch<React.SetStateAction<string[]>>,
     toast?: any,
-    containerRef?: React.RefObject<HTMLDivElement>
+    containerRef?: React.RefObject<HTMLDivElement>,
 ) => {
     e.preventDefault();
     if (!textContent.trim()) { return; }
 
+    const urls = extractUrls(textContent);
+    const urlTypes = urls.map((url: string) => identifyUrlType(url));
+    const cleanText = removeUrls(textContent);
+    console.log('cleanText', cleanText);
+    console.log('textContent', textContent);
+
     const newMessageObject = {
-        content: textContent,
+        content: cleanText,
         user_id: user?.id,
         organization: user?.organization,
         referenced_message_id: referencedMessageId || null,
         is_reference: !!referencedMessageId,
-        character_count: countCharacters(textContent),
+        character_count: countCharacters(cleanText),
         thread_id: thread_id,
         domain: domain,
         profile_picture: user?.profile_picture,
         username: user?.username,
         email: user?.email,
-        verified: false
+        verified: false,
+        urls: urlTypes
     };
 
     try {

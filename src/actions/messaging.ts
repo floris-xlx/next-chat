@@ -18,6 +18,7 @@ export interface MessageEntry {
     username?: string;
     email?: string;
     verified?: boolean;
+    urls?: any;
 }
 
 export async function addMessage({ message }: { message: MessageEntry }) {

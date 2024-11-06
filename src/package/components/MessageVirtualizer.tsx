@@ -3,6 +3,9 @@ import MessageProfilePicture from '@/package/components/MessageProfilePicture';
 import { calculateRelativeTimestamp } from '@/utils/date-utils';
 import { useVirtualizer, Virtualizer } from '@tanstack/react-virtual';
 import useResizeObservers from '@/package/hooks/use-resize-observers';
+import { renderImage } from '@/package/render/RenderImage';
+
+
 
 
 interface MessageVirtualizerProps {
@@ -97,11 +100,17 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                                     </p>
                                 </div>
                             </div>
-                            <p
+
+                            {/* this renders the actual text, it had to be done like this otherwise it would produce weird artifacts */}
+                            <div
                                 className='px-6 text-[14px] font-[400]'
                                 style={{ transform: 'translateY(-7px)', paddingLeft: '37px' }}>
                                 {item.content}
-                            </p>
+
+
+                            </div>
+
+
                         </div>
                     );
                 })}

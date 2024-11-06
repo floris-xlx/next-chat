@@ -91,16 +91,10 @@ const MessageBox = ({
             e,
             textContent,
             user,
-            '', // referencedMessageId placeholder
-            countCharacters,
+            '',
             thread_id,
             domain,
             setTextContent,
-            () => {
-                if (parentRef.current) {
-                    parentRef.current.scrollTo({ top: parentRef.current.scrollHeight, behavior: 'smooth' });
-                }
-            },
             toast,
             parentRef
         );
@@ -150,5 +144,6 @@ MessageBox.displayName = 'MessageBox';
 
 
 export {
-    MessageBox as NextMessageBox
+    MessageBox as NextMessageBox,
+    MessageProfilePicture as NextMessageProfilePicture,
 };
