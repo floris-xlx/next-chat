@@ -65,7 +65,7 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
             >
                 {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                     const item = sortedMessages[virtualRow.index];
-                    console.log('item', item);
+            
 
                     return (
                         <div
@@ -112,7 +112,7 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
 
                                 {item.content}
 
-                                {renderImage(item.urls)}
+                                {item.urls && item.urls.length > 0 && renderImage(item.urls)}
 
 
                             </div>

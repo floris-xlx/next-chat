@@ -28,6 +28,7 @@
     "next": "15.0.1",
     "react": "19.0.0-rc-69d4b800-20241021",
     "react-dom": "19.0.0-rc-69d4b800-20241021",
+    "react-image-lightbox": "^5.1.4",
     "react-sliding-item": "^1.0.0",
     "react-window": "^1.8.10",
     "swr": "^2.2.5",

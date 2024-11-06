@@ -22,7 +22,7 @@ export default function NextMessageProvider({
                 style={{
                     width: '1150px',
                     height: '600px',
-                    maxWidth: '650px',
+                    maxWidth: '850px',
                 }}
 
 
