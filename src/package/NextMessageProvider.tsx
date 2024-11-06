@@ -4,9 +4,8 @@
 import React, { useRef } from 'react';
 
 import {
-    MessageBox,
-    MessageBoxProps,
-    MessageBoxStylingProps
+    NextMessageBox,
+
 } from '@/package/NextMessage';
 
 
@@ -17,12 +16,13 @@ export default function NextMessageProvider({
 
     return (
         <form id={'next-chat-provider'}>
-            <MessageBox
+            <NextMessageBox
                 thread_id={thread_id}
                 domain={domain}
                 style={{
                     width: '1150px',
-                    height: 'full'
+                    height: '600px',
+                    maxWidth: '450px',
                 }}
 
 
