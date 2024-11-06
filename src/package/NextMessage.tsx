@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, memo, useMemo } from 'react';
-import useSWR from 'swr';
+
 import { addMessage, fetchMessagesByDomainAndThread } from '@/actions/messaging';
 import { useToast } from '@/hooks/use-toast';
 import { useCanSendMsg } from '@/package/hooks/use-can-send-msg';
@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Reply } from "lucide-react";
 import { useUserStore } from '@/store/store';
-import { useNextMessageStore } from "./store/useNextMessageStore";
+
 import MessageActionsBar from '@/package/components/MessageActionsBar';
 import handleSendClick from '@/package/interfaces/handleSendClick';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -32,10 +32,6 @@ export type MessageBoxStylingProps = {
     height: string;
 };
 
-const fetcher = async (domain: string, thread_id: string) => {
-    const response = await fetchMessagesByDomainAndThread(domain, thread_id, true);
-    return response?.data;
-};
 
 const MessageBox = ({
     thread_id,
@@ -53,14 +49,19 @@ const MessageBox = ({
     const [textContent, setTextContent] = useState('');
     const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
     const [messages, setMessages] = useState<any[]>([]);
-    const chatContainerRef = useRef<HTMLDivElement>(null);
 
     const { sendingDisabled } = useCanSendMsg({
         textContent: textContent,
         isTextAreaFocused: isTextAreaFocused
     });
 
-
+    const parentRef = useRef(null);
+    const rowVirtualizer = useVirtualizer({
+        count: messages.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 72,
+        overscan: 5,
+    });
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -76,13 +77,9 @@ const MessageBox = ({
         return () => clearInterval(interval);
     }, [domain, thread_id, update_interval_in_ms]);
 
-    const parentRef = useRef(null);
-    const rowVirtualizer = useVirtualizer({
-        count: messages.length,
-        getScrollElement: () => parentRef.current,
-        estimateSize: () => 62,
-        overscan: 5,
-    });
+
+
+
 
     const Message = memo(({ message, id }: { message: any, id: any }) => {
         const { content, username, email, profile_picture, time } = message;
@@ -105,8 +102,8 @@ const MessageBox = ({
         ), [profile_picture, avatar_fallback]);
 
         return (
-            <div className='flex flex-row justify-between w-full group' id={id} style={{ position: 'absolute', top: 0, left: '14px', width: '95%', overflowX: 'hidden', height: `${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.size}px`, transform: `translateY(${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.start}px)` }}>
-                <div className='flex flex-row max-w-full gap-x-2 '>
+            <div className='flex flex-row justify-between w-full group' id={id} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: `${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.size}px`, transform: `translateY(${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.start}px)` }}>
+                <div className='flex flex-row max-w-full gap-x-2'>
                     {renderAvatar}
                     <div className='pl-2'>
                         <div className='flex flex-row text-center items-center gap-x-1'>
@@ -134,6 +131,10 @@ const MessageBox = ({
 
     const handleSendClickWrapper = async (e: any) => {
         e.preventDefault();
+        if (parentRef.current) {
+            parentRef.current.scrollTo({ top: parentRef.current.scrollHeight, behavior: 'smooth' });
+        }
+
         await handleSendClick(
             e,
             textContent,
@@ -143,14 +144,18 @@ const MessageBox = ({
             thread_id,
             domain,
             setTextContent,
-            () => console.log(';'), // Clear messages temporarily after sending
+            () => {
+                if (parentRef.current) {
+                    parentRef.current.scrollTo({ top: parentRef.current.scrollHeight, behavior: 'smooth' });
+                }
+            },
             toast,
-            chatContainerRef
+            parentRef
         );
     };
 
     return (
-        <div id='next-chat-message-box' style={{ width: style.width, height: style.height }} >
+        <div id='next-chat-message-box' style={{ width: style.width, height: style.height }}>
             <div ref={parentRef} className='border border-b-0 rounded-t-md bg-secondary' style={{ height: '400px', width: '100%', overflow: 'auto' }}>
                 <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}>
                     {rowVirtualizer.getVirtualItems().map((virtualRow) => (
