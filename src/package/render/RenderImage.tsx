@@ -2,7 +2,7 @@
 import Link from 'next/link';
 
 import { transformTradingViewUrl } from '@/package/utils/tradingview-url';
-import { useWindowSize } from 'usehooks-ts'
+
 
 
 export function renderImage(
@@ -13,7 +13,7 @@ export function renderImage(
     }[] | undefined) {
 
     if (!Array.isArray(urls)) return null;
-    const { width = 0, height = 0 } = useWindowSize()
+  
     console.log('urls', urls);
 
     const contentStyles = {
