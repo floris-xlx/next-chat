@@ -64,15 +64,11 @@ const MessageBox = ({
 
     const [referencedMessageId, setReferencedMessageId] = useState('');
 
+    const [messageCountOld, setMessageCountOld] = useState(0);
+    const [messageCountNew, setMessageCountNew] = useState(0);
 
-    const getHighestTimeFromMessageSum = (messages: any[]) => {
-        if (messages.length === 0) { return 0; }
-        return Math.max(...messages.map((message) => message.time));
-    };
-    const [time_cursor, setTimeCursor] = useState(getHighestTimeFromMessageSum(messages));
-
-    console.log('timeCursor', time_cursor);
-    console.log('messages', messages)
+    console.log('messageCountOld', messageCountOld);
+    console.log('messageCountNew', messageCountNew);
 
     // responsible for disabling the send button
     const { sendingDisabled } = useCanSendMsg({
@@ -80,42 +76,50 @@ const MessageBox = ({
         isTextAreaFocused: isTextAreaFocused
     });
 
-    React.useEffect(() => {
-        setHasMounted(false);
-        setTimeCursor(1);
-    }, []);
-
-
+    console.log('old messages', messages);
+    
+    const [initialFetched, setInitialFetched] = useState(false);
 
 
     const fetchMessages = async () => {
-        const response = await fetchMessagesByDomainAndThread(domain, thread_id, time_cursor);
+        let response;
 
-        if (response?.data?.length > 0) {
-            console.log('response', response);
+        if (messages.length === 0 && !initialFetched) {
+            response = await fetchMessagesByDomainAndThread(domain, thread_id, true);
+            setInitialFetched(true);
 
-            setMessages(response?.data);
+            // Set old message count before updating messages
+            setMessageCountOld(response?.data?.length);
+
+        } else {
+            response = await fetchMessagesByDomainAndThread(domain, thread_id, false);
+
 
         }
-    }
+
+        if (response?.data?.length > 0) {
+            console.log('response with fetch', response);
+            console.log('new messages', response?.data);
+
+
+
+            // Update messages
+            setMessages(response?.data);
+
+            // Once messages are updated, use the new length to set the new count
+            setMessageCountNew(response?.data.length);
+
+            // Log the counts for comparison
+            console.log('Updated messageCountOld:', messages.length);
+            console.log('Updated messageCountNew:', response?.data.length);
+        }
+    };
+
 
     useEffect(() => {
         if (!thread_id || !domain) { return; }
-
-        const fetchAndSetMessages = async () => {
-            const response = await fetchMessagesByDomainAndThread(domain, thread_id, time_cursor);
-
-            if (response?.data?.length > 0) {
-                console.log('response', response);
-
-                setMessages(response?.data);
-                const newTimeCursor = getHighestTimeFromMessageSum(response?.data);
-                setTimeCursor(newTimeCursor);
-            }
-        };
-
-        fetchAndSetMessages();
-    }, [thread_id, domain, time_cursor]);
+        fetchMessages();
+    }, [thread_id, domain]);
 
 
 
@@ -130,11 +134,6 @@ const MessageBox = ({
 
 
 
-    useEffect(() => {
-        if (!thread_id || !domain) { return; }
-
-        fetchMessages();
-    }, [textContent]);
 
     const [textAreaHeight, setTextAreaHeight] = useState(32 + 32);
 
@@ -248,42 +247,38 @@ const MessageBox = ({
             const innerDiv = useRef(null);
 
             const prevInnerDivHeight = useRef(null);
-
-            const [showScrollButton, setShowScrollButton] = useState(false);
+            const [autoScroll, setAutoScroll] = useState(true);
 
             useEffect(() => {
                 const outerDivHeight = outerDiv.current.clientHeight;
                 const innerDivHeight = innerDiv.current.clientHeight;
                 const outerDivScrollTop = outerDiv.current.scrollTop;
 
-                if (
-                    !prevInnerDivHeight.current ||
-                    outerDivScrollTop === prevInnerDivHeight.current - outerDivHeight
-                ) {
+                // Check if user is already at or near bottom
+                if (autoScroll || outerDivScrollTop >= prevInnerDivHeight.current - outerDivHeight - 20) {
                     outerDiv.current.scrollTo({
                         top: innerDivHeight! - outerDivHeight!,
                         left: 0,
                         behavior: prevInnerDivHeight.current ? "smooth" : "auto"
                     });
-                } else {
-                    setShowScrollButton(true);
-                };
+                    setAutoScroll(true);
+                }
 
                 prevInnerDivHeight.current = innerDivHeight;
-            }, [children]);
+            }, [children, autoScroll]);
 
-            const handleScrollButtonClick = React.useCallback(() => {
+            const handleUserScroll = () => {
                 const outerDivHeight = outerDiv.current.clientHeight;
                 const innerDivHeight = innerDiv.current.clientHeight;
+                const outerDivScrollTop = outerDiv.current.scrollTop;
 
-                outerDiv.current.scrollTo({
-                    top: innerDivHeight! - outerDivHeight!,
-                    left: 0,
-                    behavior: "smooth"
-                });
-
-                setShowScrollButton(false);
-            }, []);
+                // If user scrolls up, disable auto scroll
+                if (outerDivScrollTop < innerDivHeight - outerDivHeight - 20) {
+                    setAutoScroll(false);
+                } else {
+                    setAutoScroll(true);
+                }
+            };
 
             return (
                 <div
@@ -299,6 +294,7 @@ const MessageBox = ({
                             height: "100%",
                             overflowY: "scroll"
                         }}
+                        onScroll={handleUserScroll}
                     >
                         <div
                             ref={innerDiv}
@@ -309,14 +305,15 @@ const MessageBox = ({
                             {children}
                         </div>
                     </div>
-
                 </div>
             )
         };
 
+
     // Handle click wrapper
     const HandleClickWrapper = async (e: any) => {
         e.preventDefault();
+        console.log('clicked HandleClickWrapper', e);
         await handleSendClick(
             e,
             textContent,

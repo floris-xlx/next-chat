@@ -45,26 +45,22 @@ export async function addMessage({ message }: { message: MessageEntry }) {
 export async function fetchMessagesByDomainAndThread(
     domain: string,
     thread_id: string,
-    time_cursor?: number
+    initial_fetch = false
 ): Promise<{
     success: boolean;
     error?: any;
-    data: any[] | null
+    data: any[] | null,
 }> {
     const xylexClient = createXylexClient();
 
-    if (!time_cursor) { 
-        return { success: false, error: 'time_cursor is required', data: null };
-    }
+    const time = initial_fetch ? 0 : Math.floor(Date.now() / 1000) - 15;
 
     const { data, error } = await xylexClient
         .from('messages')
         .select('*')
-        .gte('time', time_cursor)
+        .gte('time', time)
         .eq('domain', domain)
         .eq('thread_id', thread_id);
-    console.log('data', data);
-    console.log('time', time_cursor);
 
     if (error) {
         console.error('Error fetching messages:', error);

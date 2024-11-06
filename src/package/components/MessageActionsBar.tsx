@@ -62,9 +62,7 @@ export const MessageActionsBar = ({
             referenced_message_id: referencedMessageId || null,
             is_reference: !!referencedMessageId,
             character_count: countCharacters(textContent),
-            mentions: [], // awaiting implementation
-            attachments: [], // awaiting implementation
-            reactions: [], // awaiting implementation
+
             thread_id: thread_id,
             domain: domain,
             profile_picture: user?.profile_picture,
@@ -132,8 +130,6 @@ export const MessageActionsBar = ({
     const bgDisabledSendButton = sendingDisabled ? 'bg-hover-foreground' : '';
     const colorIcon = sendingDisabled ? '#acacad' : '#d9d9de';
 
-
-    const placeholderThreadReply = 'Reply to thread...';
 
 
 
