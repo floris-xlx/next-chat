@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, memo, useMemo } from 'react';
+import React, { useState, useEffect, useRef, memo, useMemo, Fragment } from 'react';
 
 import { addMessage, fetchMessagesByDomainAndThread } from '@/actions/messaging';
 import { useToast } from '@/hooks/use-toast';
@@ -17,7 +17,7 @@ import MessageActionsBar from '@/package/components/MessageActionsBar';
 import handleSendClick from '@/package/interfaces/handleSendClick';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useIsFirstRender } from '@uidotdev/usehooks';
-
+import ResizeObserver from '@juggle/resize-observer';
 
 
 export type MessageBoxProps = {
@@ -66,14 +66,6 @@ const MessageBox = ({
 
     // this makes sure msgs are sorted by time
     const sortedMessages = [...messages].sort((a, b) => a.time - b.time);
-
-    const rowVirtualizer = useVirtualizer({
-        count: sortedMessages.length,
-        getScrollElement: () => parentRef.current,
-        estimateSize: () => 61,
-        overscan: 5,
-        paddingEnd: 100
-    });
 
 
     useEffect(() => {
@@ -168,37 +160,74 @@ const MessageBox = ({
         );
     };
 
-    return (
-        <div
-            id='next-chat-message-box'
-            style={{
-                width: style.width,
-                height: style.height,
+    const resizeObservers = useRef([]);
 
-            }}>
-            <div
-                ref={parentRef}
-                className='border border-b-0 rounded-t-md bg-secondary'
-                style={{
-                    height: '400px',
-                    width: '100%',
-                    overflow: 'auto',
-                    overflowX: 'hidden',
-                }}>
+    const rowVirtualizer = useVirtualizer({
+        count: sortedMessages.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 35,
+        overscan: 5,
+    });
+
+    useEffect(() => {
+        const virtualItems = rowVirtualizer.getVirtualItems();
+
+        // Clean up old ResizeObservers
+        resizeObservers.current.forEach((observer) => observer.disconnect());
+        resizeObservers.current = [];
+
+        virtualItems.forEach((virtualItem) => {
+            const element = document.querySelector(`[data-index="${virtualItem.index}"]`);
+
+            if (element) {
+                const resizeObserver = new window.ResizeObserver(() => {
+                    const newSize = element.getBoundingClientRect().height;
+                    rowVirtualizer.resizeItem(virtualItem.index, newSize);
+                });
+                resizeObserver.observe(element);
+                resizeObservers.current.push(resizeObserver);
+            }
+        });
+
+        return () => {
+            resizeObservers.current.forEach((observer) => observer.disconnect());
+            resizeObservers.current = [];
+        };
+    }, [rowVirtualizer.getVirtualItems()]);
+
+
+
+    return (
+        <Fragment>
+            <div ref={parentRef} style={{ height: '400px', overflow: 'auto', width: style.width }} className='border rounded-t-md border-b-0'>
                 <div
                     style={{
-                        height: `${rowVirtualizer.getTotalSize()}px`,
+                        height: rowVirtualizer.getTotalSize(),
                         width: '100%',
                         position: 'relative',
+                    }}
+                >
+                    {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                        const item = sortedMessages[virtualRow.index];
 
-                    }}>
-                    {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-                        <Message
-                            id={virtualRow.index}
-                            key={virtualRow.index}
-                            message={sortedMessages[virtualRow.index]}
-                        />
-                    ))}
+                        return (
+                            <div
+                                key={virtualRow.key}
+                                data-index={virtualRow.index}
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    transform: `translateY(${virtualRow.start}px)`,
+                                    overflowWrap: 'break-word',
+                                    padding: '16px 16px',
+                                }}
+                            >
+                                <p className='text-[14px] font-[400]'>{item.content}</p>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
             <form
@@ -225,7 +254,8 @@ const MessageBox = ({
                 </div>
                 <MessageActionsBar sendingDisabled={sendingDisabled} />
             </form>
-        </div>
+
+        </Fragment >
     )
 };
 
