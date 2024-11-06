@@ -19,6 +19,8 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { useIsFirstRender } from '@uidotdev/usehooks';
 import ResizeObserver from '@juggle/resize-observer';
 
+// re-xports
+import MessageProfilePicture from '@/package/components/MessageProfilePicture';
 
 export type MessageBoxProps = {
     thread_id: string;
@@ -46,7 +48,7 @@ const MessageBox = ({
     allowSelectName = false,
     allowSelectMessage = false,
     placeholderMessage = 'Write a message...',
-    update_interval_in_ms = 5000,
+    update_interval_in_ms = 1000,
     parentRef = useRef(null),
     isFirstRender = false
 }: MessageBoxProps) => {
@@ -86,23 +88,9 @@ const MessageBox = ({
 
     const Message = memo(({ message, id }: { message: any, id: any }) => {
         const { content, username, email, profile_picture, time } = message;
-        const avatar_fallback = email?.charAt(0).toUpperCase();
-        const renderAvatar = useMemo(() => (
-            profile_picture ? (
-                <img
-                    src={profile_picture}
-                    height={28}
-                    width={28}
-                    alt="Profile Picture"
-                    className='rounded-md select-none mr-2'
-                    style={{ borderRadius: '6px', height: '28px', width: '28px', marginTop: '5px' }}
-                />
-            ) : (
-                <Avatar className='rounded-md'>
-                    <AvatarFallback>{avatar_fallback}</AvatarFallback>
-                </Avatar>
-            )
-        ), [profile_picture, avatar_fallback]);
+
+
+
 
         return (
             <div className='flex flex-row justify-between w-full group ' id={id} style={{
@@ -110,7 +98,8 @@ const MessageBox = ({
                 transform: `translateY(${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.start}px)`
             }}>
                 <div className='flex flex-row max-w-full gap-x-2'>
-                    {renderAvatar}
+                    <MessageProfilePicture profile_picture={profile_picture} email={email} />
+
                     <div className='pl-2'>
                         <div className='flex flex-row text-center items-center gap-x-1'>
                             <p className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`}>{username || email}</p>
@@ -167,6 +156,7 @@ const MessageBox = ({
         getScrollElement: () => parentRef.current,
         estimateSize: () => 35,
         overscan: 5,
+        paddingEnd: 50,
     });
 
     useEffect(() => {
@@ -199,7 +189,13 @@ const MessageBox = ({
 
     return (
         <Fragment>
-            <div ref={parentRef} style={{ height: '400px', overflow: 'auto', width: style.width }} className='border rounded-t-md border-b-0'>
+            <div
+                ref={parentRef}
+                style={{
+                    height: '400px',
+                    overflow: 'auto',
+                    width: style.width
+                }} className='border rounded-t-md border-b-0'>
                 <div
                     style={{
                         height: rowVirtualizer.getTotalSize(),
@@ -221,10 +217,20 @@ const MessageBox = ({
                                     width: '100%',
                                     transform: `translateY(${virtualRow.start}px)`,
                                     overflowWrap: 'break-word',
-                                    padding: '16px 16px',
+                                    padding: '8x 8px',
+                                    paddingLeft: '16px',
+                                    paddingTop: '10px',
+                                    paddingRight: '16px',
                                 }}
                             >
-                                <p className='text-[14px] font-[400]'>{item.content}</p>
+                                <div className='flex flex-row gap-x-2'>
+                                    <MessageProfilePicture profile_picture={item.profile_picture} email={item.email} />
+                                    <div className='flex flex-row text-center items-center gap-x-1' style={{transform: 'translateY(-3px)'}}>
+                                        <p className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`}>{item.username || item.email}</p>
+                                        <p className={`text-[13px] font-[300] opacity-50 ${!allowSelectName ? 'select-none' : ''}`}>{calculateRelativeTimestamp(item.time, true)}</p>
+                                    </div>
+                                </div>
+                                <p className='px-6   text-[14px] font-[400]' style={{ transform: 'translateY(-7px)', paddingLeft: '37px' }}>{item.content}</p>
                             </div>
                         );
                     })}
