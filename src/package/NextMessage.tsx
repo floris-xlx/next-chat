@@ -7,17 +7,12 @@ import { useToast } from '@/hooks/use-toast';
 import { useCanSendMsg } from '@/package/hooks/use-can-send-msg';
 import { countCharacters } from '@/package/utils/utils';
 import { calculateRelativeTimestamp } from '@/utils/date-utils';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Reply } from "lucide-react";
-import { useUserStore } from '@/store/store';
 
+import { Textarea } from '@/components/ui/textarea';
+import { useUserStore } from '@/store/store';
 import MessageActionsBar from '@/package/components/MessageActionsBar';
 import handleSendClick from '@/package/interfaces/handleSendClick';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useIsFirstRender } from '@uidotdev/usehooks';
-import ResizeObserver from '@juggle/resize-observer';
 
 // re-xports
 import MessageProfilePicture from '@/package/components/MessageProfilePicture';
@@ -49,8 +44,7 @@ const MessageBox = ({
     allowSelectMessage = false,
     placeholderMessage = 'Write a message...',
     update_interval_in_ms = 1000,
-    parentRef = useRef(null),
-    isFirstRender = false
+
 }: MessageBoxProps) => {
     const { toast } = useToast();
     const { user } = useUserStore();
@@ -58,8 +52,6 @@ const MessageBox = ({
     const [textContent, setTextContent] = useState('');
     const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
     const [messages, setMessages] = useState<any[]>([]);
-
-    console.log('isFirstRender', isFirstRender);
 
     const { sendingDisabled } = useCanSendMsg({
         textContent: textContent,
@@ -69,7 +61,6 @@ const MessageBox = ({
     // this makes sure msgs are sorted by time
     const sortedMessages = [...messages].sort((a, b) => a.time - b.time);
 
-
     useEffect(() => {
         const fetchMessages = async () => {
             const response = await fetchMessagesByDomainAndThread(domain, thread_id, messages.length === 0);
@@ -77,7 +68,6 @@ const MessageBox = ({
                 setMessages(response.data);
             }
         };
-
         fetchMessages();
         const interval = setInterval(fetchMessages, update_interval_in_ms);
 
@@ -85,44 +75,7 @@ const MessageBox = ({
     }, [domain, thread_id, update_interval_in_ms]);
 
 
-
-    const Message = memo(({ message, id }: { message: any, id: any }) => {
-        const { content, username, email, profile_picture, time } = message;
-
-
-
-
-        return (
-            <div className='flex flex-row justify-between w-full group ' id={id} style={{
-                position: 'absolute', top: '11px', left: '16px', width: '92%', height: `${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.size}px`,
-                transform: `translateY(${rowVirtualizer.getVirtualItems().find(v => v.index === id)?.start}px)`
-            }}>
-                <div className='flex flex-row max-w-full gap-x-2'>
-                    <MessageProfilePicture profile_picture={profile_picture} email={email} />
-
-                    <div className='pl-2'>
-                        <div className='flex flex-row text-center items-center gap-x-1'>
-                            <p className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`}>{username || email}</p>
-                            <p className={`text-[13px] font-[300] opacity-50 ${!allowSelectName ? 'select-none' : ''}`}>{calculateRelativeTimestamp(time, true)}</p>
-                        </div>
-                        <p className='text-[14px] font-[400] text-accent opacity-70 text-wrap'>
-                            <span
-                                style={{ wordBreak: 'break-word', overflowWrap: 'break-word', overflowX: 'hidden' }}
-                                className={`${!allowSelectMessage ? 'select-none' : ''}`}
-                                dangerouslySetInnerHTML={{ __html: content?.replace(/\n/g, "<br />") }}
-                            />
-                        </p>
-                    </div>
-                </div>
-                <div className=' px-2 flex flex-row  opacity-0 group-hover:opacity-100 transition-opacity'>
-                    <Button variant={'icon_hover'} className='hover:bg-hover bg-transparent transition rounded-md border-0 p-0'>
-                        <Reply size={18} className='text-secondary-foreground opacity-80' />
-                    </Button>
-                </div>
-            </div>
-        )
-    });
-    Message.displayName = 'Message';
+    const parentRef = useRef(null);
 
     const handleSendClickWrapper = async (e: any) => {
         e.preventDefault();
@@ -151,6 +104,7 @@ const MessageBox = ({
 
     const resizeObservers = useRef([]);
 
+    // virtualization controller
     const rowVirtualizer = useVirtualizer({
         count: sortedMessages.length,
         getScrollElement: () => parentRef.current,
@@ -159,6 +113,7 @@ const MessageBox = ({
         paddingEnd: 50,
     });
 
+    // this handles the irregular height of the messages
     useEffect(() => {
         const virtualItems = rowVirtualizer.getVirtualItems();
 
@@ -225,12 +180,16 @@ const MessageBox = ({
                             >
                                 <div className='flex flex-row gap-x-2'>
                                     <MessageProfilePicture profile_picture={item.profile_picture} email={item.email} />
-                                    <div className='flex flex-row text-center items-center gap-x-1' style={{transform: 'translateY(-3px)'}}>
-                                        <p className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`}>{item.username || item.email}</p>
-                                        <p className={`text-[13px] font-[300] opacity-50 ${!allowSelectName ? 'select-none' : ''}`}>{calculateRelativeTimestamp(item.time, true)}</p>
+                                    <div className='flex flex-row text-center items-center gap-x-1' style={{ transform: 'translateY(-3px)' }}>
+                                        <p className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`}>
+                                            {item.username || item.email}
+                                        </p>
+                                        <p className={`text-[13px] font-[300] opacity-50 ${!allowSelectName ? 'select-none' : ''}`}>{calculateRelativeTimestamp(item.time, true)}
+
+                                        </p>
                                     </div>
                                 </div>
-                                <p className='px-6   text-[14px] font-[400]' style={{ transform: 'translateY(-7px)', paddingLeft: '37px' }}>{item.content}</p>
+                                <p className='px-6 text-[14px] font-[400]' style={{ transform: 'translateY(-7px)', paddingLeft: '37px' }}>{item.content}</p>
                             </div>
                         );
                     })}
@@ -253,7 +212,7 @@ const MessageBox = ({
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 handleSendClickWrapper(e);
-                                e.preventDefault();
+
                             }
                         }}
                     />

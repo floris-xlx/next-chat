@@ -146,7 +146,7 @@ export const MessageActionsBar = ({
                         <TooltipTrigger className={classessDisabledCursor}>
                             <Button
                                 variant={'brand'}
-                                onClick={() => handleSendClick(eObj)}
+                                onClick={() => handleSendClick}
                                 size={'icon_small'}
                                 className={`rounded-md   ${bgDisabledSendButton}`}
                                 type={'button'}

@@ -10,16 +10,16 @@ import { scrollFullDown } from '@/package/utils/viewport-utils';
 
 const handleSendClick = async (
     e: any,
-    textContent: string,
-    user: any,
-    referencedMessageId: string,
-    countCharacters: (text: string) => number,
-    thread_id: string,
-    domain: string,
-    setTextContent: React.Dispatch<React.SetStateAction<string>>,
-    setMessages: React.Dispatch<React.SetStateAction<string[]>>,
-    toast: any,
-    containerRef: React.RefObject<HTMLDivElement>
+    textContent?: string,
+    user?: any,
+    referencedMessageId?: string,
+    countCharacters?: (text: string) => number,
+    thread_id?: string,
+    domain?: string,
+    setTextContent?: React.Dispatch<React.SetStateAction<string>>,
+    setMessages?: React.Dispatch<React.SetStateAction<string[]>>,
+    toast?: any,
+    containerRef?: React.RefObject<HTMLDivElement>
 ) => {
     e.preventDefault();
     if (!textContent.trim()) { return; }
@@ -31,9 +31,6 @@ const handleSendClick = async (
         referenced_message_id: referencedMessageId || null,
         is_reference: !!referencedMessageId,
         character_count: countCharacters(textContent),
-        mentions: [],
-        attachments: [],
-        reactions: [],
         thread_id: thread_id,
         domain: domain,
         profile_picture: user?.profile_picture,
