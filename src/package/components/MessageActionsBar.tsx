@@ -77,6 +77,7 @@ export const MessageActionsBar = ({
     }
 
 
+
     const classessDisabledCursor = sendingDisabled ? 'cursor-not-allowed pointer-events-none' : 'cursor-pointer';
     const bgDisabledSendButton = sendingDisabled ? 'bg-hover-foreground' : '';
     const colorIcon = sendingDisabled ? '#acacad' : '#d9d9de';
@@ -84,6 +85,7 @@ export const MessageActionsBar = ({
 
 
     const handleClick = () => {
+        console.log('send button clicked')
         setSendButtonClicked(true)
     }
 
@@ -145,11 +147,11 @@ export const MessageActionsBar = ({
                         <TooltipTrigger className={classessDisabledCursor}>
                             <Button
                                 variant={'brand'}
-                                onClick={handleClick}
+                                onClick={() => setSendButtonClicked(true)}
                                 size={'icon_small'}
                                 className={`rounded-md   ${bgDisabledSendButton}`}
-                                type={'button'}
-                                disabled={sendingDisabled}
+                                type={'submit'}
+                                //disabled={sendingDisabled}
                             
                             >
                                 <SendHorizonal size={18} color={colorIcon} />

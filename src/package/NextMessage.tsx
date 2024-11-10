@@ -64,6 +64,10 @@ const MessageBox = ({
     const [textContent, setTextContent] = useState('');
     const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
     const [messages, setMessages] = useState<any[]>([]);
+    const [lastMessageTime, setLastMessageTime] = useState(0);
+
+    console.log('lastMessageTime', lastMessageTime);
+
 
     const [event, setEvent] = useState<any>(null);
     const [mounted, setMounted] = useState(false);
@@ -78,11 +82,19 @@ const MessageBox = ({
     // this makes sure msgs are sorted by time
     const sortedMessages = [...messages].sort((a, b) => a.time - b.time);
 
+
+
+    const currentTime = Date.now();
+
     useEffect(() => {
         const fetchMessages = async () => {
             const response = await fetchMessagesByDomainAndThread(domain, thread_id, messages.length === 0);
             if (response?.data) {
                 setMessages(response.data);
+
+                if (response.data.length > 0) {
+                    setLastMessageTime(Math.max(...response.data.map(message => message.time)));
+                }
             }
         };
         fetchMessages();
@@ -91,6 +103,12 @@ const MessageBox = ({
         return () => clearInterval(interval);
     }, [domain, thread_id, update_interval_in_ms]);
 
+
+    useEffect(() => {
+        if (parentRef.current) {
+            parentRef.current.scrollTo({ top: parentRef.current.scrollHeight, behavior: 'smooth' });
+        }
+    }, [lastMessageTime]);
 
 
     useEffect(() => {
@@ -182,7 +200,7 @@ const MessageBox = ({
             <form
                 dir="ltr"
                 className='w-full border rounded-b-md bg-secondary'
-
+                onSubmit={(e) => { handleSendClickWrapper(); }}
             >
                 <div>
                     <Textarea
