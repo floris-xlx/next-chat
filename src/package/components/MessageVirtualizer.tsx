@@ -35,7 +35,12 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
         estimateSize: () => 35,
         overscan: 5,
         paddingEnd: 50,
+
+
     });
+
+    const cooking = rowVirtualizer.scrollDirection;
+    console.log('rowVirtualizer.scrollDirection;', cooking);
 
     useResizeObservers(rowVirtualizer);
 
@@ -65,7 +70,7 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
             >
                 {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                     const item = sortedMessages[virtualRow.index];
-            
+
 
                     return (
                         <div

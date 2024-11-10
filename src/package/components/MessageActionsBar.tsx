@@ -31,11 +31,11 @@ import { useUserStore, useViewStore } from '@/store/store';
 
 export const MessageActionsBar = ({
     sendingDisabled,
-    onSendClick 
+    setSendButtonClicked 
 
 }: {
     sendingDisabled: boolean,
-    onSendClick: any
+    setSendButtonClicked: any
 
 }) => {
     const { toast } = useToast();
@@ -83,7 +83,9 @@ export const MessageActionsBar = ({
 
 
 
-
+    const handleClick = () => {
+        setSendButtonClicked(true)
+    }
 
     return (
         <div className=' p-4 flex flex-row justify-between  '>
@@ -143,7 +145,7 @@ export const MessageActionsBar = ({
                         <TooltipTrigger className={classessDisabledCursor}>
                             <Button
                                 variant={'brand'}
-                                onClick={() => onSendClick()}
+                                onClick={handleClick}
                                 size={'icon_small'}
                                 className={`rounded-md   ${bgDisabledSendButton}`}
                                 type={'button'}

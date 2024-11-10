@@ -66,6 +66,7 @@ const MessageBox = ({
     const [messages, setMessages] = useState<any[]>([]);
 
     const [event, setEvent] = useState<any>(null);
+    const [mounted, setMounted] = useState(false);
 
 
     const { sendingDisabled } = useCanSendMsg({
@@ -92,6 +93,32 @@ const MessageBox = ({
 
 
 
+    useEffect(() => {
+        if (parentRef.current) {
+            parentRef.current.scrollTo({ top: parentRef.current.scrollHeight, behavior: 'smooth' });
+        }
+    }, [isTextAreaFocused]);
+
+
+    useEffect(() => {
+        const observer = new ResizeObserver(() => {
+            if (parentRef.current) {
+                parentRef.current.scrollTo({ top: parentRef.current.scrollHeight, behavior: 'auto' });
+            }
+        });
+
+        if (parentRef.current) {
+            observer.observe(parentRef.current);
+        }
+
+        return () => {
+            if (parentRef.current) {
+                observer.unobserve(parentRef.current);
+            }
+        };
+    }, []);
+
+
     const [isError, setIsError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [errorHeight, setErrorHeight] = useState(40);
@@ -115,11 +142,12 @@ const MessageBox = ({
 
     const handleSendClickWrapper = async () => {
         event?.preventDefault();
+        console.log('handleSendClickWrapper', sendButtonClicked);
         if (parentRef.current) {
             parentRef.current.scrollTo({ top: parentRef.current.scrollHeight, behavior: 'smooth' });
         }
 
-        if (sendingDisabled || isError || !sendButtonClicked) {
+        if (isError) {
             return;
         }
         setSendButtonClicked(false);
@@ -137,11 +165,6 @@ const MessageBox = ({
 
     };
 
-    useEffect(() => {
-        if (sendButtonClicked) {
-            handleSendClickWrapper();
-        }
-    }, [sendButtonClicked]);
 
 
 
@@ -176,7 +199,7 @@ const MessageBox = ({
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 setSendButtonClicked(true);
-                                handleSendClickWrapper(e);
+                                handleSendClickWrapper();
 
                             }
                         }}
@@ -192,7 +215,7 @@ const MessageBox = ({
                         />
                     </div>
                 </div>
-                <MessageActionsBar sendingDisabled={sendingDisabled} onSendClick={() => setSendButtonClicked(true)} />
+                <MessageActionsBar sendingDisabled={sendingDisabled} setSendButtonClicked={setSendButtonClicked} />
             </form>
 
         </Fragment >
