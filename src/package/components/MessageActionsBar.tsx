@@ -28,13 +28,14 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useUserStore, useViewStore } from '@/store/store';
 
-import handleSendClick from '@/package/interfaces/handleSendClick';
 
 export const MessageActionsBar = ({
     sendingDisabled,
+    onSendClick 
 
 }: {
     sendingDisabled: boolean,
+    onSendClick: any
 
 }) => {
     const { toast } = useToast();
@@ -142,11 +143,12 @@ export const MessageActionsBar = ({
                         <TooltipTrigger className={classessDisabledCursor}>
                             <Button
                                 variant={'brand'}
-                                onClick={() => handleSendClick}
+                                onClick={() => onSendClick()}
                                 size={'icon_small'}
                                 className={`rounded-md   ${bgDisabledSendButton}`}
                                 type={'button'}
                                 disabled={sendingDisabled}
+                            
                             >
                                 <SendHorizonal size={18} color={colorIcon} />
                             </Button>

@@ -30,7 +30,7 @@ export function formatBigNumber(number: number | string): string {
         maximumFractionDigits: 2
     };
     const parsedNumber = typeof number === 'string' ? parseFloat(number.replace(/,/g, '')) : number;
-    return new Intl.NumberFormat('de-DE', options).format(parsedNumber) + ' €';
+    return new Intl.NumberFormat('de-DE', { ...options, style: 'decimal' as const }).format(parsedNumber) + ' €';
 }
 
 
