@@ -83,7 +83,7 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                             }}
                             className='bg-transparent bg-hover'
                         >
-                            <div className='flex flex-row '>
+                            <div className='flex flex-row gap-2 '>
 
                                 <MessageProfilePicture
                                     profile_picture={item.profile_picture}
@@ -91,8 +91,8 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                                 />
 
                                 <div
-                                    className='flex flex-row text-center items-center gap-x-1  max-w-fit'
-                                    style={{ transform: 'translateY(-3px)' }}>
+                                    className='flex flex-row text-center items-center gap-x-1  max-w-fit '
+                                >
                                     <p
                                         className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`}>
                                         {item.username || item.email}
