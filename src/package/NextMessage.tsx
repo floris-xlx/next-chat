@@ -65,12 +65,12 @@ const MessageBox = ({
     const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
     const [messages, setMessages] = useState<any[]>([]);
     const [lastMessageTime, setLastMessageTime] = useState(0);
-
-    console.log('lastMessageTime', lastMessageTime);
-
-
+    const [isError, setIsError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [event, setEvent] = useState<any>(null);
-    const [mounted, setMounted] = useState(false);
+    const [errorHeight, setErrorHeight] = useState(40);
+    const [sendButtonClicked, setSendButtonClicked] = useState(false);
+
 
 
     const { sendingDisabled } = useCanSendMsg({
@@ -81,10 +81,6 @@ const MessageBox = ({
 
     // this makes sure msgs are sorted by time
     const sortedMessages = [...messages].sort((a, b) => a.time - b.time);
-
-
-
-    const currentTime = Date.now();
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -137,9 +133,6 @@ const MessageBox = ({
     }, []);
 
 
-    const [isError, setIsError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [errorHeight, setErrorHeight] = useState(40);
 
 
     useEffect(() => {
@@ -154,13 +147,11 @@ const MessageBox = ({
     }, [textContent, config.characterLimit]);
 
 
-    const [sendButtonClicked, setSendButtonClicked] = useState(false);
 
-    console.log('sendButtonClicked', sendButtonClicked);
 
     const handleSendClickWrapper = async () => {
         event?.preventDefault();
-        console.log('handleSendClickWrapper', sendButtonClicked);
+
         if (parentRef.current) {
             parentRef.current.scrollTo({ top: parentRef.current.scrollHeight, behavior: 'smooth' });
         }

@@ -39,13 +39,7 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
 
     });
 
-    const cooking = rowVirtualizer.scrollDirection;
-    console.log('rowVirtualizer.scrollDirection;', cooking);
-
     useResizeObservers(rowVirtualizer);
-
-
-
 
     return (
         <div

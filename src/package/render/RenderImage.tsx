@@ -13,8 +13,6 @@ export function renderImage(
     }[] | undefined) {
 
     if (!Array.isArray(urls)) return null;
-  
-    console.log('urls', urls);
 
     const contentStyles = {
         maxWidth: '250px',

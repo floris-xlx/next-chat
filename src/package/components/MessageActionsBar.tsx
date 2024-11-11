@@ -5,10 +5,7 @@ import {
     Paperclip,
     Smile,
     AtSign,
-    Reply,
-    Trash,
-    Pencil,
-    Ellipsis
+
 } from "lucide-react";
 
 // ui
@@ -31,7 +28,7 @@ import { useUserStore, useViewStore } from '@/store/store';
 
 export const MessageActionsBar = ({
     sendingDisabled,
-    setSendButtonClicked 
+    setSendButtonClicked
 
 }: {
     sendingDisabled: boolean,
@@ -83,11 +80,6 @@ export const MessageActionsBar = ({
     const colorIcon = sendingDisabled ? '#acacad' : '#d9d9de';
 
 
-
-    const handleClick = () => {
-        console.log('send button clicked')
-        setSendButtonClicked(true)
-    }
 
     return (
         <div className=' p-4 flex flex-row justify-between  '>
@@ -151,8 +143,8 @@ export const MessageActionsBar = ({
                                 size={'icon_small'}
                                 className={`rounded-md   ${bgDisabledSendButton}`}
                                 type={'submit'}
-                                //disabled={sendingDisabled}
-                            
+                            //disabled={sendingDisabled}
+
                             >
                                 <SendHorizonal size={18} color={colorIcon} />
                             </Button>
