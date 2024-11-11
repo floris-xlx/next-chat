@@ -35,10 +35,9 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
         estimateSize: () => 35,
         overscan: 5,
         paddingEnd: 50,
-
-
     });
 
+    // handles height resizing
     useResizeObservers(rowVirtualizer);
 
     return (
@@ -82,15 +81,17 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                                 paddingTop: '10px',
                                 paddingRight: '16px',
                             }}
+                            className='bg-transparent bg-hover'
                         >
-                            <div className='flex flex-row gap-x-2'>
+                            <div className='flex flex-row '>
+
                                 <MessageProfilePicture
                                     profile_picture={item.profile_picture}
                                     email={item.email}
                                 />
 
                                 <div
-                                    className='flex flex-row text-center items-center gap-x-1'
+                                    className='flex flex-row text-center items-center gap-x-1  max-w-fit'
                                     style={{ transform: 'translateY(-3px)' }}>
                                     <p
                                         className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`}>
@@ -108,15 +109,9 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                                 className='px-6 text-[14px] font-[400] '
                                 style={{ transform: 'translateY(-7px)', paddingLeft: '37px' }}
                             >
-
                                 {item.content}
-
                                 {item.urls && item.urls.length > 0 && renderImage(item.urls)}
-
-
                             </div>
-
-
                         </div>
                     );
                 })}

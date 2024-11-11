@@ -3,66 +3,874 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* styling V2 xylexUI colors */
+  --xlx-color-amber: hsla(39, 100%, 57%, 1);
+  /* amber */
+  --xlx-color-amber-light: hsla(39, 100%, 95%, 1);
+  /* amber-light */
+  --xlx-color-green: hsla(131, 41%, 46%, 1);
+  /* green */
+  --xlx-color-red: hsla(358, 70%, 52%, 1);
+  /* red */
+  --xlx-color-blue: hsla(211, 100%, 42%, 1);
+  /* blue */
+  --xlx-color-blue-light: hsla(210, 100%, 96%, 1);
+  /* blue-light */
+
+  --xlx-color-warning: hsla(39, 100%, 95%, 1);
+  /* warning */
+  --xlx-color-success: hsl(131, 41%, 46%);
+  /* success */
+  --xlx-color-error: hsl(358, 70%, 52%);
+  /* error */
 
 
-  --bg-primary: #f9f9f9;
-  --bg-secondary: #f8f8f8;
-  --text-primary: #171717;
-  --text-secondary: #6b6b6b;
-  --bg-brand: #3269ff;
-  --bg-brand-hover: #3269ffc5;
+  /* backgrounds */
+  --xlx-bg-secondary: #ffffff;
+  /* bg-primary */
+  --xlx-bg-primary: #fafafa;
+  /* bg-secondary */
+
+  /* text colors (primary&secondary icons/text use same colors) */
+  --xlx-text-primary: #171717;
+
+  /* text-primary */
+  --xlx-text-secondary: hsla(0, 0%, 40%, 1);
+  /* text-secondary */
+  --xlx-text-blue-primary: hsla(211, 100%, 42%, 1);
+  /* text-blue-primary */
+  --xlx-text-blue-secondary: hsla(210, 100%, 96%, 1);
+  /* text-blue-secondary */
+  --xlx-text-hover: rgba(161, 161, 161, 0.8);
+
+
+  /* component backgrounds */
+  --xlx-bg-default: hsla(0, 0%, 95%, 1);
+  /* bg-default */
+  --xlx-bg-hover: hsl(0, 0%, 92%);
+  /* bg-hover */
+  --xlx-bg-active: hsla(0, 0%, 90%, 1);
+  /* bg-active */
+
+  /* high contrast backgrounds */
+  --xlx-bg-high-contrast: hsla(0, 0%, 56%, 1);
+  /* bg-high-contrast */
+  --xlx-bg-high-contrast-hover: hsla(0, 0%, 49%, 1);
+  /* bg-high-contrast-hover */
+
+  /* borders */
+  --xlx-default-border: hsl(0, 0%, 92%);
+  /* border-default */
+  --xlx-hover-border: #c9c9c9;
+  /* border-hover */
+  --xlx-active-border: hsla(0, 0%, 66%, 1);
+  /* border-active */
+
+
+
+
+  /* Brand Colors */
+  --color-brand-primary: #8f33e6;
+  --color-brand-secondary: hsl(271, 66%, 56%);
+  --color-brand-disabled: hsl(271, 54%, 71%);
+  --color-brand-accent: #8d37dd2f;
+  --color-brand-text: hsl(270, 67%, 47%);
+  --color-brand-hover: #c45bf5;
+
+  --xlx-icon-color: hsla(0, 0%, 41%, 1);
+
+
+
+  /* paddings   */
+  --xlx-page-margin: 24px;
+  --xlx-page-width: 1200px;
+  --xlx-wrapper-width: calc(var(--xlx-page-width) - (var(--xlx-page-padding) * 2));
+
+  /* text */
+  --xlx-ios-size: 16px;
+
+  /* sizes */
+  --xlx-button-icon-size-height: 40px;
+  --xlx-button-icon-size-width: 40px;
+  --xlx-icon-size: 16px;
+  --xlx-radius: 5px;
+  --xlx-wrapper-height: 120px;
+  --xlx-header-height: 115px;
+  --xlx-header-height-small: 45px;
+  /* for small header */
+  --xlx-header-minified-difference: 70px;
+  /* for small header */
+  --xlx-nav-vertical-width: 300px;
 }
 
 
+
+/* Dark Mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* v2 xylexUI colors */
+    --xlx-color-amber-light: hsla(39, 100%, 57%, 1);
+    /* amber */
+    --xlx-color-amber: hsla(35, 100%, 8%, 1);
+    /* amber-light */
+    --xlx-color-green: hsla(131, 41%, 46%, 1);
+    /* green */
+    --xlx-color-red: hsla(358, 69%, 52%, 1);
+    /* red */
+    --xlx-color-blue: hsla(210, 100%, 66%, 1);
+    /* blue */
+
+    --xlx-color-warning: hsla(35, 100%, 8%, 1);
+    /* warning */
+    --xlx-color-success: hsla(131, 41%, 46%, 1);
+    /* success */
+    --xlx-color-error: hsl(358, 57%, 64%);
+    /* error */
+
+    --color-brand-text: hsl(271, 78%, 55%);
 
 
+    /* backgrounds */
+    --xlx-bg-secondary: #ffffff;
+    /* bg-primary */
+    --xlx-bg-primary: #fafafa;
+    /* bg-secondary */
 
-    --bg-brand: #3269ff;
-    --bg-brand-hover: #3269ffc5;
-    --bg-primary: #1a1a1a;
-    --bg-secondary: #2a2a2a;
-    --text-primary: #ededed;
-    --text-secondary: #bcbcbc;
+    /* text colors (primary&secondary icons/text use same colors) */
+    --xlx-text-primary: hsl(0, 0%, 93%);
+
+    /* text-primary  */
+    --xlx-text-secondary: hsla(0, 0%, 63%, 1);
+    /* text-secondary */
+    --xlx-text-blue-primary: hsla(210, 100%, 66%, 1);
+    /* text-blue-primary */
+    --xlx-text-hover: rgba(161, 161, 161, 0.8);
+
+    /* component backgrounds */
+    --xlx-bg-default: hsla(0, 0%, 10%, 1);
+    /* bg-default */
+    --xlx-bg-hover: hsl(0, 0%, 17%);
+    /* bg-hover */
+    --xlx-bg-active: hsla(0, 0%, 16%, 1);
+    /* bg-active */
+
+    /* high contrast backgrounds */
+    --xlx-bg-high-contrast: #8f8f8f;
+    /* bg-high-contrast */
+    --xlx-bg-high-contrast-hover: hsla(0, 0%, 49%, 1);
+    /* bg-high-contrast-hover */
+
+
+    /* borders */
+    --xlx-default-border: hsla(0, 0%, 18%, 1);
+    /* border-default */
+    --xlx-hover-border: hsla(0, 0%, 27%, 1);
+    /* border-hover */
+    --xlx-active-border: hsla(0, 0%, 53%, 1);
+    /* border-active */
+    --xlx-icon-color: hsla(0, 0%, 55%, 1);
+
+
   }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
-.bg-brand {
-  background-color: var(--bg-brand);
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 }
 
-.bg-brand-hover {
-  background-color: var(--bg-brand-hover);
+@layer base {
+  :root {
+    --base: #000000;
+    --color: #ffffff;
+    --background: 0 0% 98%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 90%;
+    --muted: #A8A8A8;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: #F2F2F2;
+    --accent-foreground: 0 0% 9%;
+    --brand: 271 78% 55%;
+    --brand-foreground: 270 67% 47%;
+    --brand-disabled: --color-brand-disabled;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 92%;
+    --border-secondary: #c9c9c9;
+    --input: 0 0% 89.8%;
+    --ring: 271 78% 55%;
+    --chart-1: 262.1 66.7% 47.06%;
+    --chart-2: 248.1 66.6% 43%;
+    --chart-3: 288.6 100% 67%;
+    --chart-4: 283.6 100% 80%;
+    --chart-5: 220 14.3% 95.9%;
+    --radius: 0.5rem;
+    --error: 358 70% 52%;
+    --icon: 0 0% 41%;
+    --text: 0 0% 41%;
+    --hover: 0 0% 95%;
+    --hover-foreground: rgba(54, 54, 54, 0.05);
+    --text-hover: 0 20% 28%;
+    --text-foreground: 0 0% 40%;
+    --text-secondary: #666666;
+    --xlx-logo: hsl(0, 0%, 0%);
+    --amber: 39 100% 57%;
+    --system: #3287e9;
+    --yellow: #ffd9002f;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+
+  .dark {
+    --base: #ffffff;
+    --color: #000000;
+    --background: 0 0 0%;
+    --foreground: 0 0% 4%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 49%;
+    --muted: #878787;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: #1A1A1A;
+    --accent-foreground: 0 0% 98%;
+    --brand: 271 78% 55%;
+    --brand-foreground: 271 78% 55%;
+    --brand-disabled: --color-brand-disabled;
+    --destructive: 0 63% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 18%;
+    --border-secondary: #313131;
+    --input: 0 0% 14.9%;
+    --ring: 271 78% 55%;
+    --chart-1: 262.1 66.7% 47.06%;
+    --chart-2: 248.1 66.6% 43%;
+    --chart-3: 288.6 100% 67%;
+    --chart-4: 283.6 100% 80%;
+    --chart-5: 220 14.3% 95.9%;
+    --error: 358 70% 52%;
+    --icon: 0 0% 55%;
+    --hover: 0 0% 13%;
+    --hover-foreground: #181818;
+    --text-hover: 0 20% 22%;
+    --text-foreground: 0 0% 63%;
+    --text-secondary: #A1A1A1;
+    --xlx-logo: #ffffff;
+    --amber: 39 100% 57%;
+    --system: #3287e9;
+    --yellow: #eff14f2f;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
 }
 
-.bg-background {
-  background-color: var(--background);
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    pointer-events: all !important;
+  }
+
+
 }
 
-.bg-foreground {
-  background-color: var(--foreground);
+.text-sm {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.33px;
 }
 
-.rounded-md {
+
+/* xlx typography */
+.text-xl {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 30px;
+  letter-spacing: -0.33px;
+}
+
+/* xlx typography */
+.text-2xl {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+  letter-spacing: -0.33px;
+}
+
+
+
+.border-secondary {
+  border-color: var(--border-secondary);
+  border: 1px solid var(--border-secondary) !important;
+}
+
+
+
+
+
+/* ------ raw nextui spinner   start ----- */
+@keyframes spinner-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(1turn);
+  }
+}
+
+.animate-spinner-linear-spin {
+  animation: spinner-spin .8s linear infinite;
+
+}
+
+.animate-spinner-ease-spin {
+  animation: spinner-spin .8s ease infinite;
+
+}
+@keyframes pulse {
+  50% {
+      opacity: .4;
+  }
+}
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ------ raw nextui spinner end ----- */
+
+
+
+/* Slide in Animation for auth page ----- */
+
+.SlideInAnimation {
+  animation: slide-in 1s forwards;
+
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(-30px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+
+
+.active.jsx-2240795644 {
+  color: var(--text-foreground) !important;
+}
+
+.active {
+  color: var(--text-foreground) !important;
+}
+
+[data-geist="tab-item"]:after {
+  background-color: #8f33e6 !important;
+
+  border-radius: 0px !important;
+
+}
+
+
+
+[data-geist="tab-item"]:hover {
+  color: var(--text-hover) !important;
+  opacity: 0.85;
+  transition: ease-in-out 0.1s;
+}
+
+.highlight {
+  background: hsla(var(--hover)) !important;
+  transform: scale(0.9);
+}
+
+.content {
+  padding-top: 0px !important;
+}
+
+.scale-80 {
+  --tw-scale-x: .80;
+  --tw-scale-y: .80;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+/* this is for the geist/core input with a prefix div xylex.ai/ input */
+.jsx-599062270 {
+  color: var(--text-secondary) !important;
+  background-color: hsl(var(--foreground)) !important;
+
+}
+
+.jsx-2025932032 {
+  color: var(--text-secondary) !important;
+  background-color: hsl(var(--background)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+.input-container {
+  background-color: hsl(var(--foreground)) !important;
+  color: var(--text-secondary) !important;
+}
+
+.scroll-container {
+  border-bottom: 1px solid hsl(var(--border)) !important;
+}
+
+
+.input-wrapper {
+  border: 1px solid hsl(var(--border)) !important;
+  border-left: 0px !important;
+}
+
+/* block the focus-within outline on the popover user */
+.focus-visible\:ring-2:focus-visible {
+  --tw-ring-offset-shadow: 0;
+  --tw-ring-shadow: 0;
+  box-shadow: 0 0 0 0px;
+}
+
+.text-brand {
+  color: var(--color-brand-primary);
+}
+.bg-brand-disabled {
+  background-color: var(--color-brand-disabled);
+}
+
+
+
+.bg-black\/45 {
+  background-color: hsla(0, 0%, 0%, 0.253) !important;
+}
+
+.bg-black\/35 {
+  background-color: hsla(0, 0%, 0%, 0.253) !important;
+}
+
+/* custom */
+.rounded-top-md {
+  border-top-right-radius: 6px !important;
+  border-top-left-radius: 6px !important;
+}
+
+.rounded-t-md {
+  border-top-left-radius: 6px !important;
+  border-top-right-radius: 6px !important;
+}
+
+.rounded-bottom-md {
+  border-bottom-right-radius: 6px !important;
+  border-bottom-left-radius: 6px !important;
+}
+
+.dev {
+  border: 3px solid hsl(290, 100%, 50%) !important;
+}
+
+.dev1 {
+  border: 3px solid hsl(187, 100%, 50%) !important;
+}
+
+.dev2 {
+  border: 3px solid hsl(4, 100%, 50%) !important;
+}
+
+.dev3 {
+  border: 3px solid hsl(138, 100%, 50%) !important;
+}
+
+
+/*
+flors; i know this is gross but its 8;14am and i have to get this done
+
+*/
+
+@media(min-width: 950px) {
+  .width-action-bar {
+    width: 200px !important;
+    transition: ease-in-out 0.1s;
+  }
+}
+
+@media(min-width: 1000px) {
+  .width-action-bar {
+    width: 230px !important;
+    transition: ease-in-out 0.1s;
+  }
+}
+
+@media(min-width: 1030px) {
+  .width-action-bar {
+    width: 260px !important;
+    transition: ease-in-out 0.1s;
+  }
+}
+
+
+@media(min-width: 1060px) {
+  .width-action-bar {
+    width: 300px !important;
+    transition: ease-in-out 0.1s;
+  }
+}
+
+@media(min-width: 1110px) {
+  .width-action-bar {
+    width: 340px !important;
+    transition: ease-in-out 0.1s;
+  }
+}
+
+@media(min-width: 1160px) {
+  .width-action-bar {
+    width: 400px !important;
+    transition: ease-in-out 0.1s;
+  }
+}
+
+/* calender fields */
+.aria-selected\:text-accent-foreground[aria-selected="true"] {
+  color: transparent !important;
+}
+
+/* tremor drawer side */
+.transition-transform-colors-opacity {
+  transition-property: transform, color, background, background-color, border-color, text-decoration-color, fill, stroke, opacity;
+  transition-timing-function: ease;
+  transition-duration: .25s;
+}
+
+
+
+/* loading sonner */
+
+:where([data-sonner-toast]) {
+  --y: translateY(100%);
+  --lift-amount: calc(var(--lift) * var(--gap));
+  z-index: var(--z-index);
+  position: absolute;
+  opacity: 0;
+  transform: var(--y);
+  filter: blur(0);
+  touch-action: none;
+  transition: transform .4s, opacity .4s, height .4s, box-shadow .2s;
+  box-sizing: border-box;
+  outline: none;
+  overflow-wrap: anywhere;
+}
+
+:where([data-sonner-toast][data-styled="true"]) {
+  padding: 16px;
+  background: var(--color) !important;
+  border: 1px solid var(--accent) !important;
+  color: var(--base) !important;
+  border-radius: 6px !important;
+  box-shadow: var(--accent) !important;
+  width: var(--width);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+
+/* mui overwrites  timeline */
+.css-1miy0lu-MuiTypography-root {
+  margin: 0;
+  font-family: "Inter", sans-serif !important;
+  font-weight: 400 !important;
+  font-size: 0.9rem !important;
+  line-height: 0;
+  letter-spacing: 0;
+}
+
+.css-k76dbp-MuiTimelineDot-root {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-self: baseline;
+  -ms-flex-item-align: baseline;
+  align-self: baseline;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 50%;
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  border-color: transparent;
+  color: hsl(var(--brand)) !important;
+  background-color: hsl(var(--brand)) !important;
+}
+
+.css-1ms7hib-MuiTimelineItem-root::before {
+  content: "";
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  padding: 4px 8px !important;
+}
+
+
+/* custom divider with text class */
+.divider {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.divider::before,
+.divider::after {
+  flex: 1;
+  content: '';
+  padding: 1px;
+  background-color: hsl(var(--border));
+  margin: 5px;
+}
+
+
+/* activity timeline  */
+
+.xlx-activity-timeline-width {
+  width: 1px !important;
+}
+
+
+.-bottom-6 {
+  bottom: -1.5rem;
+}
+
+.w-6 {
+  width: 1.5rem;
+}
+
+.xlx-activity-timeline-width {
+  width: 1px;
+}
+
+.h-6 w-6 {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+
+
+.-bottom-6 {
+  bottom: -1.5rem;
+}
+
+.w-6 {
+  width: 1.5rem;
+}
+
+.xm552 {
+  width: 1px;
+}
+
+.h-6 w-6 {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.t1vq5 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(229 231 235/1);
+}
+
+.l8v53 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255/1);
+}
+
+.bjzga {
+  --tw-text-opacity: 1;
+  color: rgb(59 130 246/var(--tw-text-opacity));
+}
+
+
+/* custom spinner  */
+.spinner_spinner__fqUfx,
+.spinner_wrapper__zbFtL {
+  height: var(--spinner-size, 20px);
+  width: var(--spinner-size, 20px)
+}
+
+.spinner_spinner__fqUfx {
+  position: relative;
+  top: 50%;
+  left: 50%
+}
+
+.spinner_bar__VysK5 {
+  animation: spinner_spin__7lZMA 1.2s linear infinite;
+  background: var(--xlx-hover-border);
   border-radius: 5px;
+  height: 8%;
+  left: -10%;
+  position: absolute;
+  top: -3.9%;
+  width: 24%
 }
 
-.bg-popover {
-  background-color: var(--bg-secondary);
+.spinner_bar__VysK5:first-child {
+  animation-delay: -1.2s;
+  transform: rotate(.0001deg) translate(146%)
 }
+
+.spinner_bar__VysK5:nth-child(2) {
+  animation-delay: -1.1s;
+  transform: rotate(30deg) translate(146%)
+}
+
+.spinner_bar__VysK5:nth-child(3) {
+  animation-delay: -1s;
+  transform: rotate(60deg) translate(146%)
+}
+
+.spinner_bar__VysK5:nth-child(4) {
+  animation-delay: -.9s;
+  transform: rotate(90deg) translate(146%)
+}
+
+.spinner_bar__VysK5:nth-child(5) {
+  animation-delay: -.8s;
+  transform: rotate(120deg) translate(146%)
+}
+
+.spinner_bar__VysK5:nth-child(6) {
+  animation-delay: -.7s;
+  transform: rotate(150deg) translate(146%)
+}
+
+.spinner_bar__VysK5:nth-child(7) {
+  animation-delay: -.6s;
+  transform: rotate(180deg) translate(146%)
+}
+
+.spinner_bar__VysK5:nth-child(8) {
+  animation-delay: -.5s;
+  transform: rotate(210deg) translate(146%)
+}
+
+.spinner_bar__VysK5:nth-child(9) {
+  animation-delay: -.4s;
+  transform: rotate(240deg) translate(146%)
+}
+
+.spinner_bar__VysK5:nth-child(10) {
+  animation-delay: -.3s;
+  transform: rotate(270deg) translate(146%)
+}
+
+.spinner_bar__VysK5:nth-child(11) {
+  animation-delay: -.2s;
+  transform: rotate(300deg) translate(146%)
+}
+
+.spinner_bar__VysK5:nth-child(12) {
+  animation-delay: -.1s;
+  transform: rotate(330deg) translate(146%)
+}
+
+@keyframes spinner_spin__7lZMA {
+  0% {
+    opacity: 1
+  }
+
+  to {
+    opacity: .15
+  }
+}
+
+
+/* code snippet background */
+pre {
+  background-color: hsl(var(--background)) !important;
+}
+
+/* some badge dot  */
+.bg-purple-500 {
+  background-color: hsl(271, 66%, 56%) !important;
+}
+
+.bg-rose-500 {
+  background-color: hsl(358, 70%, 52%) !important;
+}
+
+.bg-yellow-500 {
+  background-color: hsl(39, 100%, 57%) !important;
+}
+
 
 /* Thread comment box */
 .xlx-message-box {
   --tw-ring-color: 0px !important;
+}
+
+/* lightweight charts tv logo */
+a#tv-attr-logo {
+  display: none !important;
+}
+
+.tv-lightweight-charts {
+  border-bottom-left-radius: 6px !important;
+  border-bottom-right-radius: 6px !important;
+  border-top-right-radius: 0px !important;
+  border-top-left-radius: 0px !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-right: 0px !important;
+  border-left: 0px !important;
+  border-bottom-right-radius: 6px !important;
+  border-bottom-left-radius: 6px !important;
+}
+
+
+/* temp overwrites */
+.flex-row {
+  flex-direction: row;
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+  display: flex;
 }

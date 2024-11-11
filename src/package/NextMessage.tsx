@@ -147,8 +147,6 @@ const MessageBox = ({
     }, [textContent, config.characterLimit]);
 
 
-
-
     const handleSendClickWrapper = async () => {
         event?.preventDefault();
 
@@ -174,10 +172,6 @@ const MessageBox = ({
 
     };
 
-
-
-
-
     return (
         <Fragment>
 
@@ -199,6 +193,7 @@ const MessageBox = ({
                         className="bg-transparent w-full border-none ring-0 resize-none p-4 xlx-message-box transform transition-transform duration-150 ease-in-out text-[16px]"
                         value={textContent}
                         onChange={(e) => {
+
                             setTextContent(e.target.value);
                             setEvent(e);
                         }}
