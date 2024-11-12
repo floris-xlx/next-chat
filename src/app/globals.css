@@ -363,11 +363,13 @@ body {
   animation: spinner-spin .8s ease infinite;
 
 }
+
 @keyframes pulse {
   50% {
-      opacity: .4;
+    opacity: .4;
   }
 }
+
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -473,6 +475,7 @@ body {
 .text-brand {
   color: var(--color-brand-primary);
 }
+
 .bg-brand-disabled {
   background-color: var(--color-brand-disabled);
 }
@@ -845,6 +848,8 @@ pre {
 .xlx-message-box {
   --tw-ring-color: 0px !important;
 }
+
+
 
 /* lightweight charts tv logo */
 a#tv-attr-logo {

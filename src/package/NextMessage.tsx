@@ -184,7 +184,7 @@ const MessageBox = ({
 
             <form
                 dir="ltr"
-                className='w-full border rounded-b-md bg-secondary'
+                className='w-full border rounded-b-md bg-foreground'
                 onSubmit={(e) => { handleSendClickWrapper(); }}
             >
                 <div>

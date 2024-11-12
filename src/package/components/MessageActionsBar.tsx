@@ -76,7 +76,7 @@ export const MessageActionsBar = ({
 
 
     const classessDisabledCursor = sendingDisabled ? 'cursor-not-allowed pointer-events-none' : 'cursor-pointer';
-    const bgDisabledSendButton = sendingDisabled ? 'bg-hover-foreground' : '';
+    const bgDisabledSendButton = sendingDisabled ? 'bg-transparent' : '';
     const colorIcon = sendingDisabled ? '#acacad' : '#d9d9de';
 
 
