@@ -4,7 +4,10 @@ import { calculateRelativeTimestamp } from '@/utils/date-utils';
 import { useVirtualizer, Virtualizer } from '@tanstack/react-virtual';
 import useResizeObservers from '@/package/hooks/use-resize-observers';
 import { renderImage } from '@/package/render/RenderImage';
+import { useUserStore } from '@/store/store';
 
+// hooks
+import { isThisMe } from '@/package/hooks/use-is-this-me';
 
 
 
@@ -30,6 +33,10 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
     parentRef,
     style
 }) => {
+    const { user } = useUserStore();
+
+
+
     // virtualization controller
     const rowVirtualizer = useVirtualizer({
         count: sortedMessages.length,
@@ -42,6 +49,9 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
 
     // handles height resizing
     useResizeObservers(rowVirtualizer);
+
+
+
 
     return (
         <div
@@ -65,7 +75,13 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                 }}
             >
                 {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                    // this is where scoped logic runs on a message scope basis
                     const item = sortedMessages[virtualRow.index];
+
+
+                    const mentioned = isThisMe({ message: item, user: user });
+                    console.log('mentioned', mentioned);
+
 
 
                     return (
@@ -79,17 +95,18 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                                 width: '100%',
                                 transform: `translateY(${virtualRow.start}px)`,
                                 overflowWrap: 'break-word',
-
-
+                                borderLeft: mentioned ? '3px solid hsl(var(--brand-foreground))' : 'none',
+                                paddingLeft: mentioned ? '3px' : '0',
                             }}
-
                         >
-                            <div className='flex flex-col hover:bg-hover  px-4'>
+                            <div className={`flex flex-col ${mentioned ? 'hover:bg-hover' : 'hover:bg-hover'} px-4  `}
+                                style={{ transform: mentioned ? 'translateX(-3px)' : 'none' }}
+
+                            >
                                 <div className='flex flex-row gap-2 ' style={{ transform: 'translateY(4px)' }}>
                                     <MessageProfilePicture
                                         profile_picture={item.profile_picture}
                                         email={item.email}
-
                                     />
                                     <div
                                         className='flex flex-row text-center gap-x-1  max-w-fit '
