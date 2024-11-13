@@ -37,6 +37,7 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
         estimateSize: () => 35,
         overscan: 5,
         paddingEnd: 50,
+        gap: 5,
     });
 
     // handles height resizing
@@ -78,21 +79,20 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                                 width: '100%',
                                 transform: `translateY(${virtualRow.start}px)`,
                                 overflowWrap: 'break-word',
-                                padding: '8x 8px',
 
-                                paddingTop: '10px',
 
                             }}
 
                         >
                             <div className='flex flex-col hover:bg-hover  px-4'>
-                                <div className='flex flex-row gap-2'>
+                                <div className='flex flex-row gap-2 ' style={{ transform: 'translateY(4px)' }}>
                                     <MessageProfilePicture
                                         profile_picture={item.profile_picture}
                                         email={item.email}
+
                                     />
                                     <div
-                                        className='flex flex-row text-center items-center gap-x-1  max-w-fit '
+                                        className='flex flex-row text-center gap-x-1  max-w-fit '
                                     >
                                         <p
                                             className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`}>
@@ -107,7 +107,7 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                                 {/* this renders the actual text, it had to be done like this otherwise it would produce weird artifacts */}
                                 <div
                                     className='px-6 text-[14px] font-[400] '
-                                    style={{ transform: 'translateY(-7px)', paddingLeft: '37px', userSelect: allowSelectMessage ? 'auto' : 'none' }}
+                                    style={{ transform: 'translateY(-8px)', paddingLeft: '37px', userSelect: allowSelectMessage ? 'auto' : 'none' }}
                                 >
                                     {item.content}
                                     {item.urls && item.urls.length > 0 && renderImage(item.urls)}
