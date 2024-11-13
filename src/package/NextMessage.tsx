@@ -75,7 +75,6 @@ const MessageBox = ({
 
     const { sendingDisabled } = useCanSendMsg({
         textContent: textContent,
-        isTextAreaFocused: isTextAreaFocused,
         characterLimit: config.characterLimit
     });
 
@@ -108,7 +107,7 @@ const MessageBox = ({
 
 
     useEffect(() => {
-        if (parentRef.current) {
+        if (parentRef.current && isTextAreaFocused) {
             parentRef.current.scrollTo({ top: parentRef.current.scrollHeight, behavior: 'smooth' });
         }
     }, [isTextAreaFocused]);
@@ -148,7 +147,10 @@ const MessageBox = ({
 
 
     const handleSendClickWrapper = async () => {
-        event?.preventDefault();
+        if (event) {
+            event.preventDefault();
+        }
+
 
         if (parentRef.current) {
             parentRef.current.scrollTo({ top: parentRef.current.scrollHeight, behavior: 'smooth' });
@@ -219,7 +221,7 @@ const MessageBox = ({
                         />
                     </div>
                 </div>
-                <MessageActionsBar sendingDisabled={sendingDisabled} setSendButtonClicked={setSendButtonClicked} />
+                <MessageActionsBar sendingDisabled={sendingDisabled} handleSendClickWrapper={handleSendClickWrapper} />
             </form>
 
         </Fragment >
