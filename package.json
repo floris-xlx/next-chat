@@ -13,6 +13,7 @@
     "@nextui-org/spinner": "^2.0.34",
     "@nextui-org/theme": "^2.2.11",
     "@radix-ui/react-avatar": "^1.1.1",
+    "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.2",
     "@radix-ui/react-tooltip": "^1.1.3",

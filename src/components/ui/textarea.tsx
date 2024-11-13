@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useState } from "react"
 
 import { cn } from "@/lib/utils"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -22,20 +23,32 @@ const textareaVariants = cva(
 type TextareaVariantProps = Omit<VariantProps<typeof textareaVariants>, 'size'>;
 
 export interface TextareaProps
-  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'>, TextareaVariantProps {
+  extends Omit<React.HTMLAttributes<HTMLTextAreaElement>, 'size'>, TextareaVariantProps {
   size?: 'sm' | 'md' | 'lg';
   onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, size, onChange, ...props }, ref) => {
+    const [content, setContent] = useState("");
+
+    const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const newText = event.target.value;
+      setContent(newText);
+      if (onChange) {
+        onChange(event);
+      }
+    };
+
     return (
       <textarea
+        id='mention-input'
         className={cn(
           textareaVariants({ size, className })
         )}
         ref={ref}
-        onChange={onChange as React.ChangeEventHandler<HTMLTextAreaElement>}
+        value={content}
+        onChange={handleInput}
         {...props}
       />
     )

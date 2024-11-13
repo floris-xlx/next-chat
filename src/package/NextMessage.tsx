@@ -25,6 +25,9 @@ import { countCharacters } from '@/package/utils/utils';
 // config
 import { NextMessageConfig, defaultConfig } from '@/package/NextMessageConfig';
 
+import MentionPopover from '@/package/NextMentionProvider';
+
+
 
 export type MessageBoxProps = {
     thread_id: string;
@@ -175,6 +178,25 @@ const MessageBox = ({
         );
 
     };
+    const [cursorPosition, setCursorPosition] = useState(0);
+
+
+    const USERS = [
+        {
+            email: 'floris@xylex.ai',
+            username: 'floris',
+            profile_picture: 'https://i.pravatar.cc/150?img=1',
+            user_id: '1'
+
+        },
+        {
+            email: 'hadi@xylex.ai',
+            username: 'hadi',
+            profile_picture: 'https://i.pravatar.cc/150?img=2',
+            user_id: '2'
+        }
+    ]
+
 
     return (
         <Fragment>
@@ -193,27 +215,37 @@ const MessageBox = ({
                 onSubmit={(e) => { handleSendClickWrapper(); }}
             >
                 <div>
+                    <MentionPopover
+                        textContent={textContent}
+                        cursorPosition={cursorPosition}
+                        users={USERS} // Your users list
+                        
+                    />
                     <Textarea
                         placeholder={placeholderMessage}
-                        className="bg-transparent w-full border-none ring-0 resize-none p-4 xlx-message-box transform transition-transform duration-150 ease-in-out text-[16px]"
+                        className="bg-transparent w-full border-none ring-0 resize-none p-4 sm:pb-0 xlx-message-box transform transition-transform duration-150 ease-in-out text-[16px]"
                         value={textContent}
                         onChange={(e) => {
-
                             setTextContent(e.target.value);
                             setEvent(e);
+                            setCursorPosition(e.target.selectionStart); // Set the cursor position
                         }}
-                        style={{ resize: 'none', minHeight: '44px', maxHeight: '58px' }}
+                        onSelect={(e) => {
+                            setCursorPosition(e.target.selectionStart); // Update cursor position when selecting text
+                        }}
+                        style={{ resize: 'none', minHeight: '44px', maxHeight: '60px' }}
                         onFocus={() => setIsTextAreaFocused(true)}
                         onBlur={() => setIsTextAreaFocused(false)}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 setSendButtonClicked(true);
                                 handleSendClickWrapper();
-
                             }
                         }}
-
+                        autoFocus 
+                        
                     />
+
                     <div className='px-4'>
                         <Error
                             content={errorMessage}
