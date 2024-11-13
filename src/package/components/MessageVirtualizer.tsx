@@ -6,6 +6,8 @@ import useResizeObservers from '@/package/hooks/use-resize-observers';
 import { renderImage } from '@/package/render/RenderImage';
 import { useUserStore } from '@/store/store';
 
+import { twMerge } from 'tailwind-merge'
+
 // hooks
 import { isThisMe } from '@/package/hooks/use-is-this-me';
 
@@ -80,7 +82,6 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
 
 
                     const mentioned = isThisMe({ message: item, user: user });
-                    console.log('mentioned', mentioned);
 
 
 
@@ -96,12 +97,18 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                                 transform: `translateY(${virtualRow.start}px)`,
                                 overflowWrap: 'break-word',
                                 borderLeft: mentioned ? '3px solid hsl(var(--brand-foreground))' : 'none',
-                                paddingLeft: mentioned ? '3px' : '0',
+
                             }}
                         >
-                            <div className={`flex flex-col ${mentioned ? 'hover:bg-hover' : 'hover:bg-hover'} px-4  `}
-                                style={{ transform: mentioned ? 'translateX(-3px)' : 'none' }}
-
+                            <div
+                                className={twMerge(
+                                    'flex flex-col px-4',
+                                    mentioned ? 'bg-brand-accent' : 'hover:bg-hover'
+                                )}
+                                style={{
+                                    transform: mentioned ? 'translateX(-3px)' : 'none',
+                                    borderLeft: mentioned ? '3px solid hsl(var(--brand-foreground))' : 'none',
+                                }}
                             >
                                 <div className='flex flex-row gap-2 ' style={{ transform: 'translateY(4px)' }}>
                                     <MessageProfilePicture

@@ -74,6 +74,7 @@
   --color-brand-secondary: hsl(271, 66%, 56%);
   --color-brand-disabled: hsl(271, 54%, 71%);
   --color-brand-accent: #8d37dd2f;
+  --color-brand-accent-hover: #8d37dd4f;
   --color-brand-text: hsl(270, 67%, 47%);
   --color-brand-hover: #c45bf5;
 
@@ -841,6 +842,15 @@ pre {
 
 .bg-yellow-500 {
   background-color: hsl(39, 100%, 57%) !important;
+}
+
+
+.bg-brand-accent { 
+  background-color: var(--color-brand-accent) !important;
+}
+
+.bg-brand-accent:hover { 
+  background-color: var(--color-brand-accent-hover) !important;
 }
 
 
