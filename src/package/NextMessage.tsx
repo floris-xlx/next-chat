@@ -81,6 +81,8 @@ const MessageBox = ({
     // this makes sure msgs are sorted by time
     const sortedMessages = [...messages].sort((a, b) => a.time - b.time);
 
+    console.log('sortedMessages', sortedMessages);
+
     useEffect(() => {
         const fetchMessages = async () => {
             const response = await fetchMessagesByDomainAndThread(domain, thread_id, messages.length === 0);
@@ -222,7 +224,10 @@ const MessageBox = ({
                         />
                     </div>
                 </div>
-                <MessageActionsBar sendingDisabled={sendingDisabled} handleSendClickWrapper={handleSendClickWrapper} />
+                <MessageActionsBar
+                    sendingDisabled={sendingDisabled}
+                    handleSendClickWrapper={handleSendClickWrapper}
+                />
             </form>
 
         </Fragment >
