@@ -77,40 +77,39 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                                 transform: `translateY(${virtualRow.start}px)`,
                                 overflowWrap: 'break-word',
                                 padding: '8x 8px',
-                                paddingLeft: '16px',
+
                                 paddingTop: '10px',
-                                paddingRight: '16px',
+
                             }}
-                            className='bg-transparent bg-hover'
+
                         >
-                            <div className='flex flex-row gap-2 '>
-
-                                <MessageProfilePicture
-                                    profile_picture={item.profile_picture}
-                                    email={item.email}
-                                />
-
-                                <div
-                                    className='flex flex-row text-center items-center gap-x-1  max-w-fit '
-                                >
-                                    <p
-                                        className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`}>
-                                        {item.username || item.email}
-                                    </p>
-                                    <p
-                                        className={`text-[13px] font-[300] opacity-50 ${!allowSelectName ? 'select-none' : ''}`}>
-                                        {calculateRelativeTimestamp(item.time, true)}
-                                    </p>
+                            <div className='flex flex-col hover:bg-hover  px-4'>
+                                <div className='flex flex-row gap-2'>
+                                    <MessageProfilePicture
+                                        profile_picture={item.profile_picture}
+                                        email={item.email}
+                                    />
+                                    <div
+                                        className='flex flex-row text-center items-center gap-x-1  max-w-fit '
+                                    >
+                                        <p
+                                            className={`text-[15px] font-[500] ${!allowSelectName ? 'select-none' : ''}`}>
+                                            {item.username || item.email}
+                                        </p>
+                                        <p
+                                            className={`text-[13px] font-[300] opacity-50 ${!allowSelectName ? 'select-none' : ''}`}>
+                                            {calculateRelativeTimestamp(item.time, true)}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-
-                            {/* this renders the actual text, it had to be done like this otherwise it would produce weird artifacts */}
-                            <div
-                                className='px-6 text-[14px] font-[400] '
-                                style={{ transform: 'translateY(-7px)', paddingLeft: '37px' }}
-                            >
-                                {item.content}
-                                {item.urls && item.urls.length > 0 && renderImage(item.urls)}
+                                {/* this renders the actual text, it had to be done like this otherwise it would produce weird artifacts */}
+                                <div
+                                    className='px-6 text-[14px] font-[400] '
+                                    style={{ transform: 'translateY(-7px)', paddingLeft: '37px' }}
+                                >
+                                    {item.content}
+                                    {item.urls && item.urls.length > 0 && renderImage(item.urls)}
+                                </div>
                             </div>
                         </div>
                     );
