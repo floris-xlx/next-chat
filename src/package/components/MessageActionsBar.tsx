@@ -79,7 +79,8 @@ export const MessageActionsBar = ({
     const colorIcon = sendingDisabled ? '#acacad' : '#d9d9de';
 
 
-    const handleSendClick = async () => {
+    const handleSendClick = async (event: React.MouseEvent) => {
+        event.preventDefault();
         handleSendClickWrapper();
     } 
 
@@ -142,7 +143,7 @@ export const MessageActionsBar = ({
                         <TooltipTrigger className={classessDisabledCursor}>
                             <Button
                                 variant={'brand'}
-                                onClick={() => handleSendClick()}
+                                onClick={(event) => handleSendClick(event)}
                                 size={'icon_small'}
                                 className={`rounded-md   ${bgDisabledSendButton}`}
                                 type={'button'}
