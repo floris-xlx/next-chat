@@ -11,6 +11,7 @@ import { renderImage } from '@/package/render/RenderImage';
 interface MessageVirtualizerProps {
     sortedMessages: any[];
     allowSelectName: boolean;
+    allowSelectMessage: boolean;
     parentRef: React.RefObject<HTMLDivElement>;
     style: {
         maxWidth?: string;
@@ -25,6 +26,7 @@ interface MessageVirtualizerProps {
 const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
     sortedMessages,
     allowSelectName,
+    allowSelectMessage,
     parentRef,
     style
 }) => {
@@ -105,7 +107,7 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                                 {/* this renders the actual text, it had to be done like this otherwise it would produce weird artifacts */}
                                 <div
                                     className='px-6 text-[14px] font-[400] '
-                                    style={{ transform: 'translateY(-7px)', paddingLeft: '37px' }}
+                                    style={{ transform: 'translateY(-7px)', paddingLeft: '37px', userSelect: allowSelectMessage ? 'auto' : 'none' }}
                                 >
                                     {item.content}
                                     {item.urls && item.urls.length > 0 && renderImage(item.urls)}

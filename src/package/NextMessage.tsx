@@ -180,6 +180,7 @@ const MessageBox = ({
             <MessageVirtualizer
                 sortedMessages={sortedMessages}
                 allowSelectName={allowSelectName}
+                allowSelectMessage={allowSelectMessage}
                 parentRef={parentRef}
                 style={style}
             />
