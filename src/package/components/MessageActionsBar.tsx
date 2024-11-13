@@ -82,7 +82,7 @@ export const MessageActionsBar = ({
     const handleSendClick = async (event: React.MouseEvent) => {
         event.preventDefault();
         handleSendClickWrapper();
-    } 
+    }
 
 
     return (
@@ -147,7 +147,7 @@ export const MessageActionsBar = ({
                                 size={'icon_small'}
                                 className={`rounded-md   ${bgDisabledSendButton}`}
                                 type={'button'}
-                            //disabled={sendingDisabled}
+                                disabled={sendingDisabled}
 
                             >
                                 <SendHorizonal size={18} color={colorIcon} />
