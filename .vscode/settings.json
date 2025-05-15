@@ -1,3 +1,13 @@
 {
-    "typescript.tsdk": "node_modules\\typescript\\lib"
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "favorites.resources": [
+        {
+            "filePath": "src\\store\\useNextChatStore.ts",
+            "group": "Default"
+        },
+        {
+            "filePath": "src\\store\\useViewStore.ts",
+            "group": "Default"
+        }
+    ]
 }

@@ -3,9 +3,9 @@ import MessageProfilePicture from "@/package/components/MessageProfilePicture";
 import { calculateRelativeTimestamp } from "@/utils/date-utils";
 import { useVirtualizer, Virtualizer } from "@tanstack/react-virtual";
 import useResizeObservers from "@/package/hooks/use-resize-observers";
-import { renderImage } from "@/package/render/RenderImage";
+import { RenderImage } from "@/package/render/RenderImage";
 import { useUserStore } from "@/store/store";
-
+import { useNextChatStore } from "@/store/store";
 import { twMerge } from "tailwind-merge";
 
 // hooks
@@ -34,6 +34,8 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
   style,
 }) => {
   const { user } = useUserStore();
+  const { nextChat } = useNextChatStore();
+
 
   // virtualization controller
   const rowVirtualizer = useVirtualizer({
@@ -139,7 +141,7 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
                   }}
                 >
                   {item.content}
-                  {item.urls && item.urls.length > 0 && renderImage(item.urls)}
+                  {item.urls && item.urls.length > 0 && RenderImage(item.urls)}
                 </div>
               </div>
             </div>

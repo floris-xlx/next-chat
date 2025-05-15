@@ -4,7 +4,8 @@ import { persist, createJSONStorage } from "zustand/middleware";
 interface NextChat {
   currently_spotlight: boolean;
   spotlight_url: string;
-  attachments_url_list: string[];
+  attachments_url_list: string[] | null;
+  images_blurred: boolean;
 }
 
 interface NextChatStore {
@@ -13,6 +14,9 @@ interface NextChatStore {
   // Spotlight actions
   setCurrentlySpotlight: (currently_spotlight: boolean) => void;
   setSpotlightUrl: (spotlight_url: string) => void;
+
+  // image actions
+  setImagesBlurred: (blurred: boolean) => void;
 
   // Attachments actions
   setAttachmentsUrlList: (attachments_url_list: string[]) => void;
@@ -28,7 +32,8 @@ export const useNextChatStore = create<NextChatStore>()(
         nextChat: {
           currently_spotlight: false,
           spotlight_url: "",
-          attachments_url_list: [],
+          attachments_url_list: null as string[] | null,
+          images_blurred: false,
         },
 
         // Spotlight actions
@@ -45,6 +50,15 @@ export const useNextChatStore = create<NextChatStore>()(
             nextChat: {
               ...state.nextChat,
               spotlight_url,
+            },
+          })),
+
+        // Image actions
+        setImagesBlurred: (blurred: boolean) =>
+          set((state) => ({
+            nextChat: {
+              ...state.nextChat,
+              images_blurred: blurred,
             },
           })),
 
@@ -70,7 +84,7 @@ export const useNextChatStore = create<NextChatStore>()(
             nextChat: {
               ...state.nextChat,
               attachments_url_list: [
-                ...state.nextChat.attachments_url_list,
+                ...(state.nextChat.attachments_url_list || []),
                 url,
               ],
             },
@@ -80,9 +94,11 @@ export const useNextChatStore = create<NextChatStore>()(
           set((state) => ({
             nextChat: {
               ...state.nextChat,
-              attachments_url_list: state.nextChat.attachments_url_list.filter(
-                (item) => item !== url
-              ),
+              attachments_url_list: state.nextChat.attachments_url_list
+                ? state.nextChat.attachments_url_list.filter(
+                    (item) => item !== url
+                  )
+                : [],
             },
           })),
       };
@@ -105,11 +121,17 @@ export const nextChat = {
   get attachments_url_list() {
     return useNextChatStore.getState().nextChat.attachments_url_list;
   },
+  get images_blurred() {
+    return useNextChatStore.getState().nextChat.images_blurred;
+  },
   setCurrentlySpotlight(value: boolean) {
     return useNextChatStore.getState().setCurrentlySpotlight(value);
   },
   setSpotlightUrl(value: string) {
     return useNextChatStore.getState().setSpotlightUrl(value);
+  },
+  setImagesBlurred(value: boolean) {
+    return useNextChatStore.getState().setImagesBlurred(value);
   },
   setAttachmentsUrlList(value: string[]) {
     return useNextChatStore.getState().setAttachmentsUrlList(value);

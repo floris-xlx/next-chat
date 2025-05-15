@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/tooltip";
 import React, { Fragment, useState, useEffect, useRef } from "react";
 
+import { uploadFile } from "@/actions/upload_file";
+
 // zustand
 
 import { Button } from "@/components/ui/button";
@@ -161,30 +163,28 @@ export const MessageActionsBar = ({
                         const formData = new FormData();
                         formData.append("file", file);
 
-                        const response = await fetch(
-                          "https://api.suitsbooks.nl/files/upload",
-                          {
-                            method: "POST",
-                            body: formData,
+                        const result = await uploadFile(formData);
+
+                        if (result.success) {
+                          console.log("File uploaded successfully:", result);
+
+                          // Handle the file URL from the response
+                          if (result.file_url) {
+                            console.log("File URL:", result.file_url);
+
+                            // Add the file URL to the list
+                            setFilesUrlList((prev) => [...prev, result.file_url]);
                           }
-                        );
-
-                        if (!response.ok) {
-                          throw new Error(`Upload failed: ${response.status}`);
-                        }
-
-                        const data = await response.json();
-                        console.log("File uploaded successfully:", data);
-
-                        // Handle the file URL from the response
-                        if (data && data.file_url) {
-                          console.log("File URL:", data.file_url);
-
-                          // Add the file URL to the list
-                          setFilesUrlList((prev) => [...prev, data.file_url]);
+                        } else {
+                          throw new Error(result.error || "Upload failed");
                         }
                       } catch (error) {
                         console.error("Error uploading file:", error);
+                        toast({
+                          title: "Error uploading file",
+                          description: error instanceof Error ? error.message : "Unknown error occurred",
+                          variant: "destructive",
+                        });
                       }
                     }
                   }}
