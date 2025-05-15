@@ -31,7 +31,27 @@ export const MessageActionsBar = ({
   const [file, setFile] = useState<File | null>(null);
   const [filesUrlList, setFilesUrlList] = useState<string[]>([]);
 
-  // this would be the form submission
+  // Save filesUrlList to localStorage when it changes
+  useEffect(() => {
+    if (filesUrlList.length > 0) {
+      localStorage.setItem("filesUrlList", JSON.stringify(filesUrlList));
+    }
+  }, [filesUrlList]);
+
+  // Load filesUrlList from localStorage on component mount
+  useEffect(() => {
+    const savedFilesUrlList = localStorage.getItem("filesUrlList");
+    if (savedFilesUrlList) {
+      try {
+        const parsedList = JSON.parse(savedFilesUrlList);
+        if (Array.isArray(parsedList)) {
+          setFilesUrlList(parsedList);
+        }
+      } catch (error) {
+        console.error("Error parsing filesUrlList from localStorage:", error);
+      }
+    }
+  }, []);
 
   const handleAtClick = async () => {
     toast({

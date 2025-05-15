@@ -79,7 +79,6 @@ const MessageBox = ({
   // this makes sure msgs are sorted by time
   const sortedMessages = [...messages].sort((a, b) => a.time - b.time);
 
-  console.log("sortedMessages", sortedMessages);
 
   useEffect(() => {
     const fetchMessages = async () => {
