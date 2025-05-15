@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Link from "next/link";
 import { identifyUrlType } from "@/package/utils/utils";
 
@@ -20,50 +21,9 @@ export function renderImage(
     const item = identifyUrlType(url);
     
     if (item.type === "image") {
-      return (
-        <div key={index} className="flex">
-          <img
-            src={item.url}
-            alt="image"
-            className="rounded-md"
-            style={{
-              maxWidth: contentStyles.maxWidth,
-              maxHeight: contentStyles.maxHeight,
-              objectFit: contentStyles.objectFit as
-                | "fill"
-                | "contain"
-                | "cover"
-                | "none"
-                | "scale-down",
-              paddingTop: contentStyles.paddingTop,
-              borderRadius: contentStyles.borderRadius,
-            }}
-          />
-        </div>
-      );
+      return <ImageWithLightbox key={index} url={item.url} contentStyles={contentStyles} />;
     } else if (item.type === "video") {
-      return (
-        <div key={index} className="flex">
-          <video
-            src={item.url}
-            controls
-            muted
-            className="rounded-md"
-            style={{
-              maxWidth: contentStyles.maxWidth,
-              maxHeight: contentStyles.maxHeight,
-              objectFit: contentStyles.objectFit as
-                | "fill"
-                | "contain"
-                | "cover"
-                | "none"
-                | "scale-down",
-              paddingTop: contentStyles.paddingTop,
-              borderRadius: contentStyles.borderRadius,
-            }}
-          />
-        </div>
-      );
+      return <VideoWithLightbox key={index} url={item.url} contentStyles={contentStyles} />;
     } else {
       return (
         <div key={index} className="flex">
@@ -78,4 +38,100 @@ export function renderImage(
       );
     }
   });
+}
+
+function ImageWithLightbox({ url, contentStyles }: { url: string, contentStyles: any }) {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
+  if (isFullscreen) {
+    return (
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center cursor-pointer"
+        onClick={toggleFullscreen}
+      >
+        <img
+          src={url}
+          alt="fullscreen image"
+          className="max-w-[90vw] max-h-[90vh] object-contain"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex">
+      <img
+        src={url}
+        alt="image"
+        className="rounded-md cursor-pointer"
+        onClick={toggleFullscreen}
+        style={{
+          maxWidth: contentStyles.maxWidth,
+          maxHeight: contentStyles.maxHeight,
+          objectFit: contentStyles.objectFit as
+            | "fill"
+            | "contain"
+            | "cover"
+            | "none"
+            | "scale-down",
+          paddingTop: contentStyles.paddingTop,
+          borderRadius: contentStyles.borderRadius,
+        }}
+      />
+    </div>
+  );
+}
+
+function VideoWithLightbox({ url, contentStyles }: { url: string, contentStyles: any }) {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
+  if (isFullscreen) {
+    return (
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center"
+        onClick={toggleFullscreen}
+      >
+        <div onClick={(e) => e.stopPropagation()}>
+          <video
+            src={url}
+            controls
+            autoPlay
+            className="max-w-[90vw] max-h-[90vh]"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex">
+      <video
+        src={url}
+        controls
+        muted
+        className="rounded-md cursor-pointer"
+        onClick={toggleFullscreen}
+        style={{
+          maxWidth: contentStyles.maxWidth,
+          maxHeight: contentStyles.maxHeight,
+          objectFit: contentStyles.objectFit as
+            | "fill"
+            | "contain"
+            | "cover"
+            | "none"
+            | "scale-down",
+          paddingTop: contentStyles.paddingTop,
+          borderRadius: contentStyles.borderRadius,
+        }}
+      />
+    </div>
+  );
 }
