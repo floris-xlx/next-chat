@@ -43,7 +43,7 @@ const MessageVirtualizer: FC<MessageVirtualizerProps> = ({
     overscan: 5,
     paddingEnd: 50,
     gap: 5,
-    paddingStart: 12
+    paddingStart: 12,
   });
 
   // handles height resizing

@@ -19,7 +19,6 @@ export default function NextMessageProvider({
         style={{
           width: "430px",
           height: "600px",
-      
         }}
       />
     </form>

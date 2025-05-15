@@ -1,10 +1,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { identifyUrlType } from "@/package/utils/utils";
+import { useNextChatStore } from "@/store/useNextChatStore";
 
-export function renderImage(
-  urls: string[] | undefined
-) {
+export function renderImage(urls: string[] | undefined) {
   if (!Array.isArray(urls)) return null;
 
   const contentStyles = {
@@ -15,15 +14,25 @@ export function renderImage(
     borderRadius: "6px",
   };
 
-  const objectFitTypes = ["fill", "contain", "cover", "none", "scale-down"];
-
   return urls.map((url, index) => {
     const item = identifyUrlType(url);
-    
+
     if (item.type === "image") {
-      return <ImageWithLightbox key={index} url={item.url} contentStyles={contentStyles} />;
+      return (
+        <ImageWithLightbox
+          key={index}
+          url={item.url}
+          contentStyles={contentStyles}
+        />
+      );
     } else if (item.type === "video") {
-      return <VideoWithLightbox key={index} url={item.url} contentStyles={contentStyles} />;
+      return (
+        <VideoWithLightbox
+          key={index}
+          url={item.url}
+          contentStyles={contentStyles}
+        />
+      );
     } else {
       return (
         <div key={index} className="flex">
@@ -40,16 +49,26 @@ export function renderImage(
   });
 }
 
-function ImageWithLightbox({ url, contentStyles }: { url: string, contentStyles: any }) {
+function ImageWithLightbox({
+  url,
+  contentStyles,
+}: {
+  url: string;
+  contentStyles: any;
+}) {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const { nextChat, setSpotlightUrl, setCurrentlySpotlight } = useNextChatStore();
+
+
 
   const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
+    setCurrentlySpotlight(true);
+    setSpotlightUrl(url);
   };
 
   if (isFullscreen) {
     return (
-      <div 
+      <div
         className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center cursor-pointer"
         onClick={toggleFullscreen}
       >
@@ -86,7 +105,13 @@ function ImageWithLightbox({ url, contentStyles }: { url: string, contentStyles:
   );
 }
 
-function VideoWithLightbox({ url, contentStyles }: { url: string, contentStyles: any }) {
+function VideoWithLightbox({
+  url,
+  contentStyles,
+}: {
+  url: string;
+  contentStyles: any;
+}) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const toggleFullscreen = () => {
@@ -95,7 +120,7 @@ function VideoWithLightbox({ url, contentStyles }: { url: string, contentStyles:
 
   if (isFullscreen) {
     return (
-      <div 
+      <div
         className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center"
         onClick={toggleFullscreen}
       >

@@ -18,14 +18,12 @@ import handleSendClick from "@/package/interfaces/handleSendClick";
 
 // re-xports
 import MessageProfilePicture from "@/package/components/MessageProfilePicture";
-import useResizeObservers from "@/package/hooks/use-resize-observers";
 import { MessageVirtualizer } from "@/package/components/MessageVirtualizer";
 import { countCharacters } from "@/package/utils/utils";
 
 // config
 import { NextMessageConfig, defaultConfig } from "@/package/NextMessageConfig";
 
-import MentionPopover from "@/package/NextMentionProvider";
 
 export type MessageBoxProps = {
   thread_id: string;
@@ -71,9 +69,28 @@ const MessageBox = ({
   const [errorHeight, setErrorHeight] = useState(40);
   const [sendButtonClicked, setSendButtonClicked] = useState(false);
 
+  // Get files URL list from localStorage
+  const [filesUrlList, setFilesUrlList] = useState<string[]>([]);
+  
+  useEffect(() => {
+    // Check localStorage for files URL list when component mounts
+    const storedFilesUrlList = localStorage.getItem('filesUrlList');
+    if (storedFilesUrlList) {
+      try {
+        const parsedList = JSON.parse(storedFilesUrlList);
+        if (Array.isArray(parsedList)) {
+          setFilesUrlList(parsedList);
+        }
+      } catch (error) {
+        console.error('Error parsing filesUrlList from localStorage:', error);
+      }
+    }
+  }, []);
+
   const { sendingDisabled } = useCanSendMsg({
     textContent: textContent,
     characterLimit: config.characterLimit,
+    filesUrlList: filesUrlList,
   });
 
   // this makes sure msgs are sorted by time

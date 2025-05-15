@@ -1,26 +1,27 @@
 // utils
-import { countCharacters } from '@/package/utils/utils';
-import { useState, useEffect } from 'react';
+import { countCharacters } from "@/package/utils/utils";
+import { useState, useEffect } from "react";
 
 interface UseCanSendMsgProps {
-    textContent: string;
-    characterLimit: number;
+  textContent: string;
+  characterLimit: number;
+  filesUrlList?: string[];
 }
 
 export const useCanSendMsg = ({
-    textContent,
-    characterLimit
+  textContent,
+  characterLimit,
+  filesUrlList = [],
 }: UseCanSendMsgProps): { sendingDisabled: boolean } => {
-    const [sendingDisabled, setSendingDisabled] = useState(true);
+  const [sendingDisabled, setSendingDisabled] = useState(true);
 
-    useEffect(() => {
-        const characters = countCharacters(textContent);
-        if (characters < 1 || characters > characterLimit) {
-            setSendingDisabled(true);
-        } else {
-            setSendingDisabled(false);
-        }
-    }, [textContent]);
+  useEffect(() => {
+    const characters = countCharacters(textContent);
 
-    return { sendingDisabled };
+    setSendingDisabled(
+      !(filesUrlList.length > 0) && (characters < 1 || characters > characterLimit)
+    );
+  }, [textContent, filesUrlList, characterLimit]);
+
+  return { sendingDisabled };
 };
