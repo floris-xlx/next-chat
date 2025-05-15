@@ -127,8 +127,8 @@ function VideoWithLightbox({
         <div onClick={(e) => e.stopPropagation()}>
           <video
             src={url}
-            controls
-            autoPlay
+            controls={false}
+            autoPlay={false}
             className="max-w-[90vw] max-h-[90vh]"
           />
         </div>
@@ -140,7 +140,7 @@ function VideoWithLightbox({
     <div className="flex">
       <video
         src={url}
-        controls
+        controls={false}
         muted
         className="rounded-md cursor-pointer"
         onClick={toggleFullscreen}

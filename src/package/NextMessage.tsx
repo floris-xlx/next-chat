@@ -24,7 +24,6 @@ import { countCharacters } from "@/package/utils/utils";
 // config
 import { NextMessageConfig, defaultConfig } from "@/package/NextMessageConfig";
 
-
 export type MessageBoxProps = {
   thread_id: string;
   domain: string;
@@ -37,8 +36,8 @@ export type MessageBoxProps = {
 };
 
 export type MessageBoxStylingProps = {
-  width: string;
-  height: string;
+  width: string | number;
+  height: string | number;
   minWidth?: string;
   maxWidth?: string;
   maxHeight?: string;
@@ -71,10 +70,10 @@ const MessageBox = ({
 
   // Get files URL list from localStorage
   const [filesUrlList, setFilesUrlList] = useState<string[]>([]);
-  
+
   useEffect(() => {
     // Check localStorage for files URL list when component mounts
-    const storedFilesUrlList = localStorage.getItem('filesUrlList');
+    const storedFilesUrlList = localStorage.getItem("filesUrlList");
     if (storedFilesUrlList) {
       try {
         const parsedList = JSON.parse(storedFilesUrlList);
@@ -82,7 +81,7 @@ const MessageBox = ({
           setFilesUrlList(parsedList);
         }
       } catch (error) {
-        console.error('Error parsing filesUrlList from localStorage:', error);
+        console.error("Error parsing filesUrlList from localStorage:", error);
       }
     }
   }, []);
@@ -95,7 +94,6 @@ const MessageBox = ({
 
   // this makes sure msgs are sorted by time
   const sortedMessages = [...messages].sort((a, b) => a.time - b.time);
-
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -202,7 +200,6 @@ const MessageBox = ({
   };
   const [cursorPosition, setCursorPosition] = useState(0);
 
-
   return (
     <Fragment>
       <MessageVirtualizer
@@ -223,7 +220,7 @@ const MessageBox = ({
         <div>
           <Textarea
             placeholder={placeholderMessage}
-            className="bg-transparent w-full border-none ring-0 resize-none p-4 sm:pb-0 xlx-message-box transform transition-transform duration-150 ease-in-out text-[16px]"
+            className="bg-transparent w-full border-none ring-0 resize-none p-4 sm:pb-0 xlx-message-box transform transition-transform duration-150 ease-in-out text-[16px] translate-y-[-100px]"
             value={textContent}
             onChange={(e) => {
               setTextContent(e.target.value);

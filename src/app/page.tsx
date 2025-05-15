@@ -40,7 +40,7 @@ export default function Home() {
         setSpotlightUrl={setSpotlightUrl}
       />
 
-      <div className="p-4 flex flex-row justify-center w-full translate-y-[10%] sm:translate-y-[50%] ">
+      <div className="flex flex-row justify-center w-full  h-[85vh]">
         <NextMessageProvider thread_id={thread_id} domain={domain} />
       </div>
     </Fragment>
