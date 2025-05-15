@@ -28,6 +28,9 @@ export const MessageActionsBar = ({
   const { toast } = useToast();
   const { user } = useUserStore();
 
+  const [file, setFile] = useState<File | null>(null);
+  const [filesUrlList, setFilesUrlList] = useState<string[]>([]);
+
   // this would be the form submission
 
   const handleAtClick = async () => {
@@ -110,15 +113,63 @@ export const MessageActionsBar = ({
           </Tooltip>
           <Tooltip>
             <TooltipTrigger>
-              <Button
-                variant={"icon_naked"}
-                onClick={handleAttachClick}
-                size={"icon_small"}
-                className="rounded-md hover:bg-hover-foreground"
-                type={"button"}
-              >
-                <Paperclip size={18} className="text-icon" />
-              </Button>
+              <label htmlFor="file-upload" className="cursor-pointer">
+                <Button
+                  variant={"icon_naked"}
+                  size={"icon_small"}
+                  className="rounded-md hover:bg-hover-foreground"
+                  type={"button"}
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent form submission
+                    // Directly trigger the file input click
+                    document.getElementById("file-upload")?.click();
+                  }}
+                >
+                  <Paperclip size={18} className="text-icon" />
+                </Button>
+                <input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={async (e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      const file = e.target.files[0];
+                      console.log("File selected:", file);
+                      setFile(file);
+
+                      try {
+                        const formData = new FormData();
+                        formData.append("file", file);
+
+                        const response = await fetch(
+                          "https://api.suitsbooks.nl/files/upload",
+                          {
+                            method: "POST",
+                            body: formData,
+                          }
+                        );
+
+                        if (!response.ok) {
+                          throw new Error(`Upload failed: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+                        console.log("File uploaded successfully:", data);
+
+                        // Handle the file URL from the response
+                        if (data && data.file_url) {
+                          console.log("File URL:", data.file_url);
+
+                          // Add the file URL to the list
+                          setFilesUrlList((prev) => [...prev, data.file_url]);
+                        }
+                      } catch (error) {
+                        console.error("Error uploading file:", error);
+                      }
+                    }
+                  }}
+                />
+              </label>
             </TooltipTrigger>
             <TooltipContent className="p-0 px-1">
               <p className="text-[10px] font-[400]">{toolTipTexts.attach}</p>
