@@ -16,13 +16,13 @@ export function extractUrls(text: string): string[] {
 export function isImageUrl(url: string): boolean {
   if (!url) return false;
 
-  return url.match(/\.(jpeg|jpg|gif|png|webm|webp)$/) != null;
+  return url.match(/\.(jpeg|jpg|gif|png|PNG|JPEG|JPG|GIF|WEBM|WEBP|webm|webp)$/) != null;
 }
 
 export function isVideoUrl(url: string): boolean {
   if (!url) return false;
 
-  return url.match(/\.(avi|mp4|mpeg4|wmv)$/) != null;
+  return url.match(/\.(avi|mp4|mpeg4|wmv|AVI|MP4|MPEG4|WMV)$/) != null;
 }
 
 export function isPdfUrl(url: string): boolean {

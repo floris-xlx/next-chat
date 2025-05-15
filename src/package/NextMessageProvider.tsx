@@ -17,8 +17,8 @@ export default function NextMessageProvider({
         thread_id={thread_id}
         domain={domain}
         style={{
-          width: "550px",
-          height: "800px",
+          width: "430px",
+          height: "600px",
       
         }}
       />
