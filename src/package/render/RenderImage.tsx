@@ -7,8 +7,8 @@ export function renderImage(urls: string[] | undefined) {
   if (!Array.isArray(urls)) return null;
 
   const contentStyles = {
-    maxWidth: "250px",
-    maxHeight: "200px",
+    maxWidth: "420px",
+    maxHeight: "420px",
     objectFit: "contain",
     paddingTop: "10px",
     borderRadius: "6px",
@@ -57,9 +57,8 @@ function ImageWithLightbox({
   contentStyles: any;
 }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { nextChat, setSpotlightUrl, setCurrentlySpotlight } = useNextChatStore();
-
-
+  const { nextChat, setSpotlightUrl, setCurrentlySpotlight } =
+    useNextChatStore();
 
   const toggleFullscreen = () => {
     setCurrentlySpotlight(true);
