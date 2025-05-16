@@ -1,0 +1,35 @@
+name: XBP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  auto-release:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read xbp.json values
+        id: parse_json
+        run: |
+          PROJECT_NAME=$(jq -r '.project_name' .xbp/xbp.json)
+          PORT=$(jq -r '.port' .xbp/xbp.json)
+          BUILD_DIR=$(jq -r '.build_dir' .xbp/xbp.json)
+          MAJOR=$(jq -er '.version.major // 0' .xbp/xbp.json)
+          MINOR=$(jq -er '.version.minor // 1' .xbp/xbp.json)
+
+          echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+          echo "PORT=$PORT" >> $GITHUB_ENV
+          echo "BUILD_DIR=$BUILD_DIR" >> $GITHUB_ENV
+          echo "MAJOR=$MAJOR" >> $GITHUB_ENV
+          echo "MINOR=$MINOR" >> $GITHUB_ENV
+      - name: XBP building deployment
+        run: |
+          chmod +x .xbp/redeploy.sh
+          .xbp/redeploy.sh --app-name "$PROJECT_NAME" --port "$PORT" --app-dir "$BUILD_DIR"
