@@ -100,7 +100,7 @@ const MessageBox = ({ thread_id, domain, time_cursor }: MessageBoxProps) => {
     const newMessageObject = {
       content: textContent,
       user_id: user?.id,
-      organization: user?.organization,
+      organization_id: user?.organization_id ?? user?.organization,
       referenced_message_id: referencedMessageId || null,
       is_reference: !!referencedMessageId,
       character_count: countCharacters(textContent),

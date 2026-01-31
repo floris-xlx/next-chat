@@ -10,7 +10,7 @@ export interface Message {
     is_reference: boolean;
     mentions: string[];
     message_id: string;
-    organization: string;
+    organization_id: string;
     profile_picture: string | null;
     reactions: any[] | null;
     referenced_message_id: string | null;

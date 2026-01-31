@@ -1,6 +1,6 @@
 'use server';
 
-import { createXylexClient } from '@/lib/supabase/client';
+import { insertIntoAthena } from '@/lib/athena/client';
 
 export interface EventLogEntry {
     route: string;
@@ -16,13 +16,17 @@ export interface EventLogEntry {
 }
 
 export async function addEventLog(eventLog: EventLogEntry) {
-    const xylexClient = createXylexClient();
+    const { success, error } = await insertIntoAthena({
+        table: 'event_log_users',
+        schema: 'public',
+        insertBody: eventLog,
+        overrides: {
+            organizationId: eventLog.organization,
+            userId: eventLog.user_id,
+        },
+    });
 
-    const { error } = await xylexClient
-        .from('event_log_users')
-        .insert([eventLog]);
-
-    if (error) {
+    if (!success) {
         console.error('Error inserting event log:', error);
         return { success: false, error };
     }
