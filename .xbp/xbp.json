@@ -1,6 +1,6 @@
 {
     "port": 3020,
-    "build_dir": "/home/floris-xlx/repos/next-chat",
-    "project_name": "next-chat.org",
+    "build_dir": "/home/xbp/github/floris-xlx/next-chat",
+    "project_name": "next-chat",
     "url": "chat.xbp.app"
 }
